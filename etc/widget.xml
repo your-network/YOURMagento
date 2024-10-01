@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widgets xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Widget:etc/widget.xsd">
+    <widget id="your_integration_product_bullets" class="Your\Integration\Block\Widget\Product\Bullets" is_email_compatible="false">
+        <label translate="true">YOUR Product Content - Bullets</label>
+        <description>YOUR Streamed Content - Product Bullets</description>
+    </widget>
+    <widget id="your_integration_product_description" class="Your\Integration\Block\Widget\Product\Description" is_email_compatible="false">
+        <label translate="true">YOUR Product Content - Description</label>
+        <description>YOUR Streamed Content - Product Description</description>
+    </widget>
+    <widget id="your_integration_product_images" class="Your\Integration\Block\Widget\Product\Images" is_email_compatible="false">
+        <label translate="true">YOUR Product Content - Images</label>
+        <description>YOUR Streamed Content - Product Images</description>
+    </widget>
+    <widget id="your_integration_product_pdf" class="Your\Integration\Block\Widget\Product\Pdf" is_email_compatible="false">
+        <label translate="true">YOUR Product Content - PDF</label>
+        <description>YOUR Streamed Content - Product PDF</description>
+    </widget>
+    <widget id="your_integration_product_pros_cons" class="Your\Integration\Block\Widget\Product\ProsCons" is_email_compatible="false">
+        <label translate="true">YOUR Product Content - Pros Cons</label>
+        <description>YOUR Streamed Content - Product Pros Cons</description>
+    </widget>
+    <widget id="your_integration_product_qa" class="Your\Integration\Block\Widget\Product\Qa" is_email_compatible="false">
+        <label translate="true">YOUR Product Content - QA</label>
+        <description>YOUR Streamed Content - Product QA</description>
+    </widget>
+    <widget id="your_integration_product_reasons_to_buy" class="Your\Integration\Block\Widget\Product\ReasonsToBuy" is_email_compatible="false">
+        <label translate="true">YOUR Product Content - Reasons To Buy</label>
+        <description>YOUR Streamed Content - Product Reasons To Buy</description>
+    </widget>
+    <widget id="your_integration_product_reviews" class="Your\Integration\Block\Widget\Product\Reviews" is_email_compatible="false">
+        <label translate="true">YOUR Product Content - Reviews</label>
+        <description>YOUR Streamed Content - Product Reviews</description>
+    </widget>
+    <widget id="your_integration_product_specifications" class="Your\Integration\Block\Widget\Product\Specifications" is_email_compatible="false">
+        <label translate="true">YOUR Product Content - Specifications</label>
+        <description>YOUR Streamed Content - Product Specifications</description>
+    </widget>
+    <widget id="your_integration_product_videos" class="Your\Integration\Block\Widget\Product\Videos" is_email_compatible="false">
+        <label translate="true">YOUR Product Content - Videos</label>
+        <description>YOUR Streamed Content - Product Videos</description>
+    </widget>
+</widgets>

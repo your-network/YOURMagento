@@ -1,0 +1,27 @@
+{
+    "name": "your/magento2-integration",
+    "description": "YOUR Product Content Magento 2 Integration",
+    "type": "magento2-module",
+    "version": "1.0.0",
+    "authors": [
+        {
+            "name": "YOUR Development Team",
+            "email": "magento-support@your.io"
+        }
+    ],
+    "require": {
+        "php": ">=8.1.0",
+        "magento/framework": "*",
+        "magento/module-webapi": "*",
+        "magento/module-catalog-widget": "*"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Your\\Integration\\": ""
+        }
+    }
+}
+
