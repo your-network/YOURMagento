@@ -10,7 +10,6 @@ use Magento\Framework\Api\SortOrder;
 use Magento\Framework\Api\SortOrderBuilder;
 use Magento\Framework\Data\OptionSourceInterface;
 
-
 class Attribute implements OptionSourceInterface
 {
     /**
@@ -64,9 +63,10 @@ class Attribute implements OptionSourceInterface
             $attributes = $this->productAttributeRepository->getList($searchCriteria)
                 ->getItems();
 
-            $this->options = [
+            $this->options = [[
+                'value' => null,
                 'label' => __('-- Please Select --'),
-            ];
+            ]];
 
             foreach ($attributes as $attribute) {
                 $this->options[] = [

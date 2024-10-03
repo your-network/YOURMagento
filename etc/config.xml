@@ -4,8 +4,6 @@
         <your_integration>
             <general>
                 <enabled>1</enabled>
-                <mpn_attribute_code>mpn</mpn_attribute_code>
-                <gtin_attribute_code>gtin</gtin_attribute_code>
                 <api_base_url>https://integrations-acceptance.your.io</api_base_url>
             </general>
         </your_integration>

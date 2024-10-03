@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace Your\Integration\Model;
 
-use Magento\Framework\HTTP\LaminasClient;
-use Magento\Framework\HTTP\LaminasClientFactory;
+use Magento\Framework\HTTP\Client\Curl;
+use Magento\Framework\HTTP\Client\CurlFactory;
+use Magento\Framework\Serialize\Serializer\Json;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Store\Model\StoreManagerInterface;
 use Your\Integration\Model\System\Config;
 
 class ApiRequest
 {
+    public const INTEGRATION_SUBPATH_STRING             = '__YOUR_INTEGRATION_SUBPATH__';
     public const ENDPOINT_PATH_PRODUCT_TITLE            = '/Magento/Product/Title';
     public const ENDPOINT_PATH_PRODUCT_DESCRIPTION      = '/Magento/Product/Description';
     public const ENDPOINT_PATH_PRODUCT_PROS_CONS        = '/Magento/Product/ProsCons';
@@ -47,9 +51,19 @@ class ApiRequest
     public const ENDPOINT_PATH_STATS_REQUESTS_PRODUCTS  = '/Magento/Stats/Requests/Products';
 
     /**
-     * @var LaminasClientFactory
+     * @var CurlFactory
      */
-    private LaminasClientFactory $laminasClientFactory;
+    private CurlFactory $curlFactory;
+
+    /**
+     * @var StoreManagerInterface
+     */
+    private StoreManagerInterface $storeManager;
+
+    /**
+     * @var Json
+     */
+    private Json $json;
 
     /**
      * @var Config
@@ -57,35 +71,122 @@ class ApiRequest
     private Config $config;
 
     /**
-     * @param LaminasClientFactory $laminasClientFactory
+     * @param CurlFactory $curlFactory
+     * @param StoreManagerInterface $storeManager
+     * @param Json $json
      * @param Config $config
      */
     public function __construct(
-        LaminasClientFactory $laminasClientFactory,
+        CurlFactory $curlFactory,
+        StoreManagerInterface $storeManager,
+        Json $json,
         Config $config
     ) {
-        $this->laminasClientFactory = $laminasClientFactory;
+        $this->curlFactory = $curlFactory;
+        $this->storeManager = $storeManager;
+        $this->json = $json;
         $this->config = $config;
     }
 
     /**
-     * @return LaminasClient
+     * @return Curl
      */
-    public function getHttpClient(): LaminasClient
+    public function getHttpClient(): Curl
     {
-        /** @var LaminasClient $client */
-        $client = $this->laminasClientFactory->create();
-
-        $client->setOptions([
-            'maxredirects' => 0,
-            'timeout' => 60
-        ]);
-
+        $client = $this->curlFactory->create();
         $client->setHeaders([
-            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
             'Authorization' => $this->config->getApiKey()
         ]);
 
         return $client;
+    }
+
+    /**
+     * @return string
+     */
+    public function getYourApiUrlHome(): string
+    {
+        return $this->config->getApiBaseUrl() . self::ENDPOINT_PATH_HOME;
+    }
+
+    /**
+     * @return string
+     */
+    public function getYourApiUrlShopRegister(): string
+    {
+        return $this->config->getApiBaseUrl() . self::ENDPOINT_PATH_SHOP_REGISTER;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMagentoApiBasePath(): string
+    {
+        try {
+            $storeCode = $this->storeManager->getStore()->getCode();
+        } catch (\Exception) {
+            $storeCode = 'default';
+        }
+
+        return "/rest/$storeCode/V1/your-integration/";
+    }
+
+    /**
+     * @param array $payload
+     * @return string
+     * @throws LocalizedException
+     * @throws \InvalidArgumentException
+     */
+    public function postShopRegister(array $payload): string
+    {
+        $client = $this->getHttpClient();
+        $client->post(
+            $this->getYourApiUrlShopRegister(),
+            $this->json->serialize($payload)
+        );
+
+        $result = $this->json->unserialize($client->getBody());
+        $errors = implode(', ', $result['errors'] ?? []);
+
+        if ($client->getStatus() !== 200) {
+            if ($errors) {
+                throw new LocalizedException(__($errors));
+            } else {
+                throw new LocalizedException(__('Non-200 Response From API'));
+            }
+        }
+
+        if (isset($result['success']) && $result['success'] !== true) {
+            throw new LocalizedException(__('Unsuccessful API Attempt'));
+        }
+
+        if (!isset($result['apiKey']) && !$result['apiKey']) {
+            throw new LocalizedException(__('API Not Present In Response'));
+        }
+
+        return $result['apiKey'];
+    }
+
+    /**
+     * @param string $replaceSubPathWith
+     * @return string
+     */
+    public function getClientCode(string $replaceSubPathWith): string
+    {
+        $client = $this->getHttpClient();
+        $client->get($this->getYourApiUrlHome());
+
+        if ($client->getStatus() !== 200) {
+            return __('Non-200 Response From API')->getText();
+        }
+
+        $body = $client->getBody();
+        if ($replaceSubPathWith) {
+            $replace = self::INTEGRATION_SUBPATH_STRING;
+            $body = str_replace($replace, $replaceSubPathWith, $body);
+        }
+
+        return $body;
     }
 }

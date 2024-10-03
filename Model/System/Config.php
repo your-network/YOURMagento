@@ -32,6 +32,22 @@ class Config
     /**
      * @return bool
      */
+    public function getIsConfigured(): bool
+    {
+        return $this->getApiKey() && $this->hasIdentifierAttributesConfigured();
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasIdentifierAttributesConfigured(): bool
+    {
+        return $this->getGtinAttributeCode() || $this->getMpnAttributeCode();
+    }
+
+    /**
+     * @return bool
+     */
     public function getIsEnabled(): bool
     {
         return $this->scopeConfig->isSetFlag(

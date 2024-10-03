@@ -10,8 +10,9 @@ use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Your\Integration\Model\System\Config;
+use Your\Integration\Service\Register as RegisterService;
 
-class Index extends Action implements HttpGetActionInterface
+class Register extends Action implements HttpGetActionInterface
 {
     const ADMIN_RESOURCE = 'Your_Integration::your_integration_dashboard';
 
@@ -21,15 +22,23 @@ class Index extends Action implements HttpGetActionInterface
     private Config $config;
 
     /**
+     * @var RegisterService
+     */
+    private RegisterService $registerService;
+
+    /**
      * @param Context $context
      * @param Config $config
+     * @param RegisterService $registerService
      */
     public function __construct(
         Context $context,
-        Config $config
+        Config $config,
+        RegisterService $registerService
     ) {
         parent::__construct($context);
         $this->config = $config;
+        $this->registerService = $registerService;
     }
 
     /**
@@ -37,15 +46,19 @@ class Index extends Action implements HttpGetActionInterface
      */
     public function execute(): ResultInterface
     {
-        if (!$this->config->getApiKey()) {
-            return $this->resultFactory->create(ResultFactory::TYPE_REDIRECT)
-                ->setUrl($this->getUrl('adminhtml/system_config/edit/section/your_integration'));
+        $result = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT)
+            ->setUrl($this->getUrl('adminhtml/system_config/edit/section/your_integration'));
+
+        if ($this->config->getApiKey()) {
+            return $result;
         }
 
-        $resultPage = $this->resultFactory->create(ResultFactory::TYPE_PAGE);
-        $resultPage->setActiveMenu('Your_Integration::your_integration');
-        $resultPage->getConfig()->getTitle()->prepend(__('Dashboard'));
+        try {
+            $this->registerService->execute();
+        } catch (\Exception $exception) {
+            $this->messageManager->addErrorMessage($exception->getMessage());
+        }
 
-        return $resultPage;
+        return $result;
     }
 }
