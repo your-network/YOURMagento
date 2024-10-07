@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<integrations>
-    <integration name="YOUR Product Content Integration">
-        <email>magento-support@your.io</email>
-    </integration>
-</integrations>

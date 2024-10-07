@@ -5,12 +5,16 @@ declare(strict_types=1);
 namespace Your\Integration\Service;
 
 use Magento\Backend\Model\Auth\Session;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Locale\Resolver;
+use Magento\Framework\App\Cache\TypeListInterface;
+use Magento\Framework\App\Cache\Type\Config as ConfigCache;
+use Magento\Framework\App\Config\Storage\WriterInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\Information;
 use Magento\Store\Model\StoreManagerInterface;
-use Your\Integration\Model\ApiRequest;
+use Your\Integration\Model\System\Config;
+use Your\Integration\Model\YourApi;
 
 class Register
 {
@@ -30,34 +34,58 @@ class Register
     private Information $information;
 
     /**
+     * @var TypeListInterface
+     */
+    private TypeListInterface $cacheTypeList;
+
+    /**
      * @var StoreManagerInterface
      */
     private StoreManagerInterface $storeManager;
 
     /**
-     * @var ApiRequest
+     * @var WriterInterface
      */
-    private ApiRequest $apiRequest;
+    private WriterInterface $configWriter;
+
+    /**
+     * @var Config
+     */
+    private Config $config;
+
+    /**
+     * @var YourApi
+     */
+    private YourApi $yourApi;
 
     /**
      * @param Session $adminSession
      * @param Resolver $localeResolver
      * @param Information $information
+     * @param TypeListInterface $cacheTypeList
      * @param StoreManagerInterface $storeManager
-     * @param ApiRequest $apiRequest
+     * @param WriterInterface $configWriter
+     * @param Config $config
+     * @param YourApi $yourApi
      */
     public function __construct(
         Session $adminSession,
         Resolver $localeResolver,
         Information $information,
+        TypeListInterface $cacheTypeList,
         StoreManagerInterface $storeManager,
-        ApiRequest $apiRequest
+        WriterInterface $configWriter,
+        Config $config,
+        YourApi $yourApi
     ) {
         $this->adminSession = $adminSession;
         $this->localeResolver = $localeResolver;
         $this->information = $information;
+        $this->cacheTypeList = $cacheTypeList;
         $this->storeManager = $storeManager;
-        $this->apiRequest = $apiRequest;
+        $this->configWriter = $configWriter;
+        $this->config = $config;
+        $this->yourApi = $yourApi;
     }
 
     /**
@@ -66,9 +94,18 @@ class Register
      */
     public function execute(): void
     {
-        $registrationData = $this->getRegistrationData();
-        $apiKey = $this->apiRequest->postShopRegister($registrationData);
-        $this->saveApiKey($apiKey);
+        if ($this->config->getApiKey()) {
+            return;
+        }
+
+        $result = $this->yourApi->apiPostShopRegister(
+            $this->getRegistrationData()
+        );
+
+        if (isset($result['apiKey'])) {
+            $this->configWriter->save(Config::XML_PATH_API_KEY, $result['apiKey']);
+            $this->cacheTypeList->cleanType(ConfigCache::TYPE_IDENTIFIER);
+        }
     }
 
     /**
@@ -91,6 +128,11 @@ class Register
         $magentoApiKey = 'y92sorilnvujbfhvh42t5ztz3uchn4dj';
         $embedWebhookUrl = '';
 
+        $website = $store->getBaseUrl();
+        $locale = $this->localeResolver->getLocale();
+        $currencyCode = $store->getBaseCurrency()->getCode();
+        $languageCode = strtolower(strstr($locale, '_', true));
+
         return [
             'magentoId' => $magentoId,
             'magentoApiKey' => $magentoApiKey,
@@ -104,17 +146,17 @@ class Register
                 'country' => $storeInformation->getCountryId(),
                 'phoneNumber' => $storeInformation->getPhone(),
                 'vatNumber' => $storeInformation->getVatNumber(),
-                'currencyCode' => $store->getBaseCurrency()->getCode(),
-                'contentLanguage' => $this->localeResolver->getLocale(),
-                'website' => $store->getBaseUrl(),
+                'currencyCode' => $currencyCode,
+                'contentLanguage' => $languageCode,
+                'website' => $website,
                 'notifications' => [
                     'email' => true
                 ],
             ],
             'user' => [
-                'personalName' => $adminUser->getName(),
-                'website' => $store->getBaseUrl(),
+                'website' => $website,
                 'email' => $adminUser->getEmail(),
+                'personalName' => $adminUser->getName(),
             ]
         ];
     }
@@ -125,13 +167,5 @@ class Register
     public function createIntegration(): array
     {
         return [];
-    }
-
-    /**
-     * @param string $apiKey
-     */
-    public function saveApiKey(string $apiKey): void
-    {
-
     }
 }
