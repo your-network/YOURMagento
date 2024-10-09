@@ -1,5 +1,11 @@
 <?xml version="1.0"?>
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+    <route url="/V1/your-integration/Embed/Snippet/:locale" method="GET">
+        <service class="Your\Integration\Api\ApiProxyInterface" method="getEmbedSnippet"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
     <route url="/V1/your-integration/Product/Title" method="GET">
         <service class="Your\Integration\Api\ApiProxyInterface" method="getProductTitle"/>
         <resources>
@@ -8,12 +14,6 @@
     </route>
     <route url="/V1/your-integration/Product/Description" method="GET">
         <service class="Your\Integration\Api\ApiProxyInterface" method="getProductDescription"/>
-        <resources>
-            <resource ref="anonymous"/>
-        </resources>
-    </route>
-    <route url="/V1/your-integration/Product/ProsCons" method="GET">
-        <service class="Your\Integration\Api\ApiProxyInterface" method="getProductProsCons"/>
         <resources>
             <resource ref="anonymous"/>
         </resources>
@@ -30,14 +30,14 @@
             <resource ref="anonymous"/>
         </resources>
     </route>
-    <route url="/V1/your-integration/Product/Bullets" method="GET">
-        <service class="Your\Integration\Api\ApiProxyInterface" method="getProductBullets"/>
+    <route url="/V1/your-integration/Product/ProsCons" method="GET">
+        <service class="Your\Integration\Api\ApiProxyInterface" method="getProductProsCons"/>
         <resources>
             <resource ref="anonymous"/>
         </resources>
     </route>
-    <route url="/V1/your-integration/Product/Reviews" method="GET">
-        <service class="Your\Integration\Api\ApiProxyInterface" method="getProductReviews"/>
+    <route url="/V1/your-integration/Product/Bullets" method="GET">
+        <service class="Your\Integration\Api\ApiProxyInterface" method="getProductBullets"/>
         <resources>
             <resource ref="anonymous"/>
         </resources>
@@ -54,8 +54,20 @@
             <resource ref="anonymous"/>
         </resources>
     </route>
-    <route url="/V1/your-integration/Product/QnaQuestions" method="GET">
-        <service class="Your\Integration\Api\ApiProxyInterface" method="getProductQnaQuestions"/>
+    <route url="/V1/your-integration/Product/Reviews" method="GET">
+        <service class="Your\Integration\Api\ApiProxyInterface" method="getProductReviews"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/your-integration/Product/QnAQuestions" method="GET">
+        <service class="Your\Integration\Api\ApiProxyInterface" method="getProductQnAQuestions"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    <route url="/V1/your-integration/QnA/Question/:questionId/Answers" method="GET">
+        <service class="Your\Integration\Api\ApiProxyInterface" method="getQnAQuestionAnswers"/>
         <resources>
             <resource ref="anonymous"/>
         </resources>

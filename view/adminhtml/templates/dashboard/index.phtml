@@ -2,8 +2,6 @@
 /**
  * @var $escaper \Magento\Framework\Escaper
  * @var $block \Magento\Backend\Block\Template
- * @var $viewModel \Your\Integration\ViewModel\Adminhtml\Dashboard
  */
-$viewModel = $block->getData('view_model');
 ?>
-<iframe class="yi-iframe" src="<?= $escaper->escapeUrl($viewModel->getEmbedUrl()) ?>"></iframe>
+<iframe class="yi-iframe" src="<?= $escaper->escapeUrl($block->getUrl('your_integration/dashboard/embed')) ?>"></iframe>

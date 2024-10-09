@@ -9,7 +9,6 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Controller\ResultInterface;
-use Magento\Framework\Exception\LocalizedException;
 use Your\Integration\Model\YourApi;
 
 class Embed extends Action implements HttpGetActionInterface
@@ -35,14 +34,13 @@ class Embed extends Action implements HttpGetActionInterface
 
     /**
      * @return ResultInterface
-     * @throws LocalizedException
      */
     public function execute(): ResultInterface
     {
-        $rawResult = $this->yourApi->apiGetHome();
-        $magentoApiUrl = $this->yourApi->getMagentoApiUrl();
-        $rawResult = $this->yourApi->replaceIntegrationPath($rawResult, $magentoApiUrl);
+        $response = $this->yourApi->apiGetHome();
+        $apiProxyUrl = $this->yourApi->getMagentoAdminApiUrl();
+        $response = $this->yourApi->replaceIntegrationPath($response, $apiProxyUrl);
 
-        return $this->resultFactory->create(ResultFactory::TYPE_RAW)->setContents($rawResult);
+        return $this->resultFactory->create(ResultFactory::TYPE_RAW)->setContents($response);
     }
 }

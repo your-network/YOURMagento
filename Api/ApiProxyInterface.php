@@ -9,17 +9,17 @@ interface ApiProxyInterface
     /**
      * @return mixed
      */
+    public function getEmbedSnippet(): mixed;
+
+    /**
+     * @return mixed
+     */
     public function getProductTitle(): mixed;
 
     /**
      * @return mixed
      */
     public function getProductDescription(): mixed;
-
-    /**
-     * @return mixed
-     */
-    public function getProductProsCons(): mixed;
 
     /**
      * @return mixed
@@ -34,12 +34,12 @@ interface ApiProxyInterface
     /**
      * @return mixed
      */
-    public function getProductBullets(): mixed;
+    public function getProductProsCons(): mixed;
 
     /**
      * @return mixed
      */
-    public function getProductReviews(): mixed;
+    public function getProductBullets(): mixed;
 
     /**
      * @return mixed
@@ -54,5 +54,15 @@ interface ApiProxyInterface
     /**
      * @return mixed
      */
-    public function getProductQnaQuestions(): mixed;
+    public function getProductReviews(): mixed;
+
+    /**
+     * @return mixed
+     */
+    public function getProductQnAQuestions(): mixed;
+
+    /**
+     * @return mixed
+     */
+    public function getQnAQuestionAnswers(): mixed;
 }

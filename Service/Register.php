@@ -10,6 +10,7 @@ use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\App\Cache\Type\Config as ConfigCache;
 use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\Information;
 use Magento\Store\Model\StoreManagerInterface;
@@ -49,6 +50,11 @@ class Register
     private WriterInterface $configWriter;
 
     /**
+     * @var Json
+     */
+    private Json $json;
+
+    /**
      * @var Config
      */
     private Config $config;
@@ -65,6 +71,7 @@ class Register
      * @param TypeListInterface $cacheTypeList
      * @param StoreManagerInterface $storeManager
      * @param WriterInterface $configWriter
+     * @param Json $json
      * @param Config $config
      * @param YourApi $yourApi
      */
@@ -75,6 +82,7 @@ class Register
         TypeListInterface $cacheTypeList,
         StoreManagerInterface $storeManager,
         WriterInterface $configWriter,
+        Json $json,
         Config $config,
         YourApi $yourApi
     ) {
@@ -84,6 +92,7 @@ class Register
         $this->cacheTypeList = $cacheTypeList;
         $this->storeManager = $storeManager;
         $this->configWriter = $configWriter;
+        $this->json = $json;
         $this->config = $config;
         $this->yourApi = $yourApi;
     }
@@ -98,14 +107,19 @@ class Register
             return;
         }
 
-        $result = $this->yourApi->apiPostShopRegister(
-            $this->getRegistrationData()
-        );
-
-        if (isset($result['apiKey'])) {
-            $this->configWriter->save(Config::XML_PATH_API_KEY, $result['apiKey']);
-            $this->cacheTypeList->cleanType(ConfigCache::TYPE_IDENTIFIER);
+        $result = $this->yourApi->apiPostShopRegister($this->getRegistrationData());
+        try {
+            $result = $this->json->unserialize($result);
+        } catch (\Exception) {
+            throw new LocalizedException(__('Invalid API Response During Registration'));
         }
+
+        if (!isset($result['apiKey'])) {
+            throw new LocalizedException(__('No API Provided In Registration Response'));
+        }
+
+        $this->configWriter->save(Config::XML_PATH_API_KEY, $result['apiKey']);
+        $this->cacheTypeList->cleanType(ConfigCache::TYPE_IDENTIFIER);
     }
 
     /**
