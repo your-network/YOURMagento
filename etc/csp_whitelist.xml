@@ -5,6 +5,7 @@
             <values>
                 <value id="your-integration-img-src-loom" type="host">*.loom.com</value>
                 <value id="your-integration-img-src-wasabisys" type="host">*.wasabisys.com</value>
+                <value id="your-integration-img-src-githubusercontent" type="host">*.githubusercontent.com</value>
             </values>
         </policy>
         <policy id="script-src">
@@ -20,6 +21,7 @@
         </policy>
         <policy id="connect-src">
             <values>
+                <value id="your-integration-connect-src-your" type="host">*.your.io</value>
                 <value id="your-integration-connect-src-wasabisys" type="host">*.wasabisys.com</value>
             </values>
         </policy>

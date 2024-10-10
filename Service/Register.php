@@ -94,7 +94,8 @@ class Register
      */
     public function execute(): void
     {
-        $result = $this->yourApi->apiPostShopRegister($this->getRegistrationData());
+        $result = $this->yourApi->apiPostShopRegister($this->getRegistrationData())
+            ->getResponse();
         try {
             $result = $this->json->unserialize($result);
         } catch (\Exception) {
@@ -107,7 +108,7 @@ class Register
 
         $clientScript = $this->yourApi->apiGetEmbedSnippet([
             'locale' => $this->config->getContentLanguage()
-        ]);
+        ])->getResponse();
 
         $this->configWriter->save(Config::XML_PATH_CLIENT_SCRIPT, $clientScript);
         $this->configWriter->save(Config::XML_PATH_API_KEY, $result['apiKey']);

@@ -64,7 +64,7 @@ class UpdateClientScript implements ObserverInterface
 
         $clientScript = $this->yourApi->apiGetEmbedSnippet([
             'locale' => $this->config->getContentLanguage()
-        ]);
+        ])->getResponse();
 
         if ($clientScript) {
             $this->configWriter->save(Config::XML_PATH_CLIENT_SCRIPT, $clientScript);

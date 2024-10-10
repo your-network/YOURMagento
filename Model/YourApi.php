@@ -6,7 +6,6 @@ namespace Your\Integration\Model;
 
 use Laminas\Http\Request;
 use Magento\Backend\Model\UrlInterface;
-use Magento\Framework\HTTP\Client\Curl;
 use Magento\Framework\HTTP\Client\CurlFactory;
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Store\Model\StoreManagerInterface;
@@ -68,7 +67,7 @@ class YourApi
         'Subscription' => self::ENDPOINT_PATH_SUBSCRIPTION,
         'Subscription/Models' => self::ENDPOINT_PATH_SUBSCRIPTION_MODELS,
         'Subscription/Downgrade' => self::ENDPOINT_PATH_SUBSCRIPTION_DOWNGRADE,
-        'Subscription/Cost/Prediction' => self::ENDPOINT_PATH_SUBSCRIPTION_COST_PREDICTION,
+        'Subscription/CostPrediction' => self::ENDPOINT_PATH_SUBSCRIPTION_COST_PREDICTION,
         'Payment/Stripe/SetupIntent' => self::ENDPOINT_PATH_PAYMENT_STRIPE_SETUP_INTENT,
     ];
 
@@ -98,24 +97,32 @@ class YourApi
     private Config $config;
 
     /**
+     * @var ApiResponseFactory
+     */
+    private ApiResponseFactory $apiResponseFactory;
+
+    /**
      * @param UrlInterface $backendUrl
      * @param CurlFactory $curlFactory
      * @param StoreManagerInterface $storeManager
      * @param Json $json
      * @param Config $config
+     * @param ApiResponseFactory $apiResponseFactory
      */
     public function __construct(
         UrlInterface $backendUrl,
         CurlFactory $curlFactory,
         StoreManagerInterface $storeManager,
         Json $json,
-        Config $config
+        Config $config,
+        ApiResponseFactory $apiResponseFactory
     ) {
         $this->backendUrl = $backendUrl;
         $this->curlFactory = $curlFactory;
         $this->storeManager = $storeManager;
         $this->json = $json;
         $this->config = $config;
+        $this->apiResponseFactory = $apiResponseFactory;
     }
 
     /**
@@ -182,16 +189,14 @@ class YourApi
      * @param array $params
      * @param string $apiKey
      * @param string $method
-     * @param bool $returnClient
-     * @return string|Curl
+     * @return ApiResponse
      */
     public function makeRequest(
         string $uri,
         array $params = [],
         string $apiKey = '',
         string $method = Request::METHOD_GET,
-        bool $returnClient = false
-    ): string|Curl {
+    ): ApiResponse {
         $client = $this->curlFactory->create();
         $client->addHeader('Content-Type', 'application/json');
 
@@ -205,17 +210,16 @@ class YourApi
             $client->get($params ? $uri . '?' . http_build_query($params) : $uri);
         }
 
-        if ($returnClient) {
-            return $client;
-        }
-
-        return $client->getBody();
+        return $this->apiResponseFactory->create([
+            'response' => $client->getBody(),
+            'statusCode' => $client->getStatus(),
+        ]);
     }
 
     /**
-     * @return string
+     * @return ApiResponse
      */
-    public function apiGetHome(): string
+    public function apiGetHome(): ApiResponse
     {
         return $this->makeRequest(
             $this->getYourApiUrl(self::ENDPOINT_PATH_HOME)
@@ -224,9 +228,9 @@ class YourApi
 
     /**
      * @param array $params
-     * @return string
+     * @return ApiResponse
      */
-    public function apiPostShopRegister(array $params): string
+    public function apiPostShopRegister(array $params): ApiResponse
     {
         return $this->makeRequest(
             $this->getYourApiUrl(self::ENDPOINT_PATH_SHOP_REGISTER),
@@ -239,9 +243,9 @@ class YourApi
     /**
      *
      * @param array $params
-     * @return string
+     * @return ApiResponse
      */
-    public function apiGetEmbedSnippet(array $params): string
+    public function apiGetEmbedSnippet(array $params): ApiResponse
     {
         // Normalize to accept both - {locale}.js and {locale} as valid param
         $locale = str_replace('.js', '', $params['locale'] ?? '') . '.js';
@@ -257,9 +261,9 @@ class YourApi
 
     /**
      * @param array $params
-     * @return string
+     * @return ApiResponse
      */
-    public function apiGetProductTitle(array $params): string
+    public function apiGetProductTitle(array $params): ApiResponse
     {
         return $this->makeRequest(
             $this->getYourApiUrl(self::ENDPOINT_PATH_PRODUCT_TITLE),
@@ -270,9 +274,9 @@ class YourApi
 
     /**
      * @param array $params
-     * @return string
+     * @return ApiResponse
      */
-    public function apiGetProductDescription(array $params): string
+    public function apiGetProductDescription(array $params): ApiResponse
     {
         return $this->makeRequest(
             $this->getYourApiUrl(self::ENDPOINT_PATH_PRODUCT_DESCRIPTION),
@@ -283,9 +287,9 @@ class YourApi
 
     /**
      * @param array $params
-     * @return string
+     * @return ApiResponse
      */
-    public function apiGetProductProsCons(array $params): string
+    public function apiGetProductProsCons(array $params): ApiResponse
     {
         return $this->makeRequest(
             $this->getYourApiUrl(self::ENDPOINT_PATH_PRODUCT_PROS_CONS),
@@ -296,9 +300,9 @@ class YourApi
 
     /**
      * @param array $params
-     * @return string
+     * @return ApiResponse
      */
-    public function apiGetProductImages(array $params): string
+    public function apiGetProductImages(array $params): ApiResponse
     {
         return $this->makeRequest(
             $this->getYourApiUrl(self::ENDPOINT_PATH_PRODUCT_IMAGES),
@@ -309,9 +313,9 @@ class YourApi
 
     /**
      * @param array $params
-     * @return string
+     * @return ApiResponse
      */
-    public function apiGetProductMedia(array $params): string
+    public function apiGetProductMedia(array $params): ApiResponse
     {
         return $this->makeRequest(
             $this->getYourApiUrl(self::ENDPOINT_PATH_PRODUCT_MEDIA),
@@ -322,9 +326,9 @@ class YourApi
 
     /**
      * @param array $params
-     * @return string
+     * @return ApiResponse
      */
-    public function apiGetProductBullets(array $params): string
+    public function apiGetProductBullets(array $params): ApiResponse
     {
         return $this->makeRequest(
             $this->getYourApiUrl(self::ENDPOINT_PATH_PRODUCT_BULLETS),
@@ -335,9 +339,9 @@ class YourApi
 
     /**
      * @param array $params
-     * @return string
+     * @return ApiResponse
      */
-    public function apiGetProductReviews(array $params): string
+    public function apiGetProductReviews(array $params): ApiResponse
     {
         return $this->makeRequest(
             $this->getYourApiUrl(self::ENDPOINT_PATH_PRODUCT_REVIEWS),
@@ -348,9 +352,9 @@ class YourApi
 
     /**
      * @param array $params
-     * @return string
+     * @return ApiResponse
      */
-    public function apiGetProductReasonsToBuy(array $params): string
+    public function apiGetProductReasonsToBuy(array $params): ApiResponse
     {
         return $this->makeRequest(
             $this->getYourApiUrl(self::ENDPOINT_PATH_PRODUCT_REASONS_TO_BUY),
@@ -361,9 +365,9 @@ class YourApi
 
     /**
      * @param array $params
-     * @return string
+     * @return ApiResponse
      */
-    public function apiGetProductSpecifications(array $params): string
+    public function apiGetProductSpecifications(array $params): ApiResponse
     {
         return $this->makeRequest(
             $this->getYourApiUrl(self::ENDPOINT_PATH_PRODUCT_SPECIFICATIONS),
@@ -374,9 +378,9 @@ class YourApi
 
     /**
      * @param array $params
-     * @return string
+     * @return ApiResponse
      */
-    public function apiGetProductQnAQuestions(array $params): string
+    public function apiGetProductQnAQuestions(array $params): ApiResponse
     {
         return $this->makeRequest(
             $this->getYourApiUrl(self::ENDPOINT_PATH_PRODUCT_QA_QUESTIONS),
@@ -387,9 +391,9 @@ class YourApi
 
     /**
      * @param array $params
-     * @return string
+     * @return ApiResponse
      */
-    public function apiGetQnAQuestionAnswers(array $params): string
+    public function apiGetQnAQuestionAnswers(array $params): ApiResponse
     {
         $url = $this->getYourApiUrl(self::ENDPOINT_PATH_QA_QUESTION_ANSWERS);
         $url = str_replace('{questionId}', (string)$params['questionId'] ?? '', $url);

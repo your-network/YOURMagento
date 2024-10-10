@@ -88,17 +88,16 @@ class Request extends Action implements HttpGetActionInterface, HttpPostActionIn
             $params = $request->getQuery()->toArray();
         }
 
-        $client = $this->yourApi->makeRequest(
+        $response = $this->yourApi->makeRequest(
             $apiRequestUrl,
             $params,
             $this->config->getApiKey(),
-            $request->getMethod(),
-            true
+            $request->getMethod()
         );
 
         return $this->resultFactory->create(ResultFactory::TYPE_RAW)
-            ->setHttpResponseCode($client->getStatus())
-            ->setContents($client->getBody());
+            ->setHttpResponseCode($response->getHttpStatus())
+            ->setContents($response->getResponse());
     }
 
     /**

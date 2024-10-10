@@ -10,6 +10,7 @@ use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Your\Integration\Model\System\Config;
+use Your\Integration\Model\YourApi;
 
 class Index extends Action implements HttpGetActionInterface
 {
@@ -21,15 +22,23 @@ class Index extends Action implements HttpGetActionInterface
     private Config $config;
 
     /**
+     * @var YourApi
+     */
+    private YourApi $yourApi;
+
+    /**
      * @param Context $context
      * @param Config $config
+     * @param YourApi $yourApi
      */
     public function __construct(
         Context $context,
-        Config $config
+        Config $config,
+        YourApi $yourApi
     ) {
         parent::__construct($context);
         $this->config = $config;
+        $this->yourApi = $yourApi;
     }
 
     /**
@@ -42,10 +51,11 @@ class Index extends Action implements HttpGetActionInterface
                 ->setUrl($this->getUrl('adminhtml/system_config/edit/section/your_integration'));
         }
 
-        $resultPage = $this->resultFactory->create(ResultFactory::TYPE_PAGE);
-        $resultPage->setActiveMenu('Your_Integration::your_integration');
-        $resultPage->getConfig()->getTitle()->prepend(__('Dashboard'));
+        $response = $this->yourApi->replaceIntegrationPath(
+            $this->yourApi->apiGetHome()->getResponse(),
+            $this->yourApi->getMagentoAdminApiUrl()
+        );
 
-        return $resultPage;
+        return $this->resultFactory->create(ResultFactory::TYPE_RAW)->setContents($response);
     }
 }

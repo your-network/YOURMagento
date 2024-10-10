@@ -4,21 +4,30 @@ declare(strict_types=1);
 
 namespace Your\Integration\Model;
 
+use Magento\Framework\Webapi\Rest\Response;
 use Your\Integration\Api\ApiProxyInterface;
 
 class ApiProxy implements ApiProxyInterface
 {
+    /**
+     * @var Response
+     */
+    private Response $response;
+
     /**
      * @var YourApi
      */
     private YourApi $yourApi;
 
     /**
+     * @param Response $response
      * @param YourApi $yourApi
      */
     public function __construct(
+        Response $response,
         YourApi $yourApi
     ) {
+        $this->response = $response;
         $this->yourApi = $yourApi;
     }
 
@@ -27,9 +36,11 @@ class ApiProxy implements ApiProxyInterface
      */
     public function getEmbedSnippet(string $locale): mixed
     {
-        return $this->yourApi->apiGetEmbedSnippet([
-            'locale' => $locale
-        ]);
+        return $this->handleResponse(
+            $this->yourApi->apiGetEmbedSnippet([
+                'locale' => $locale
+            ])
+        );
     }
 
     /**
@@ -37,10 +48,12 @@ class ApiProxy implements ApiProxyInterface
      */
     public function getProductTitle(string $matchId, string $lang): mixed
     {
-        return $this->yourApi->apiGetProductTitle([
-            'matchId' => $matchId,
-            'lang' => $lang,
-        ]);
+        return $this->handleResponse(
+            $this->yourApi->apiGetProductTitle([
+                'matchId' => $matchId,
+                'lang' => $lang,
+            ])
+        );
     }
 
     /**
@@ -48,10 +61,12 @@ class ApiProxy implements ApiProxyInterface
      */
     public function getProductDescription(string $matchId, string $lang): mixed
     {
-        return $this->yourApi->apiGetProductDescription([
-            'matchId' => $matchId,
-            'lang' => $lang,
-        ]);
+        return $this->handleResponse(
+            $this->yourApi->apiGetProductDescription([
+                'matchId' => $matchId,
+                'lang' => $lang,
+            ])
+        );
     }
 
     /**
@@ -59,10 +74,12 @@ class ApiProxy implements ApiProxyInterface
      */
     public function getProductImages(string $matchId, string $lang): mixed
     {
-        return $this->yourApi->apiGetProductImages([
-            'matchId' => $matchId,
-            'lang' => $lang,
-        ]);
+        return $this->handleResponse(
+            $this->yourApi->apiGetProductImages([
+                'matchId' => $matchId,
+                'lang' => $lang,
+            ])
+        );
     }
 
     /**
@@ -70,10 +87,12 @@ class ApiProxy implements ApiProxyInterface
      */
     public function getProductMedia(string $matchId, string $lang): mixed
     {
-        return $this->yourApi->apiGetProductMedia([
-            'matchId' => $matchId,
-            'lang' => $lang,
-        ]);
+        return $this->handleResponse(
+            $this->yourApi->apiGetProductMedia([
+                'matchId' => $matchId,
+                'lang' => $lang,
+            ])
+        );
     }
 
     /**
@@ -81,10 +100,12 @@ class ApiProxy implements ApiProxyInterface
      */
     public function getProductProsCons(string $matchId, string $lang): mixed
     {
-        return $this->yourApi->apiGetProductProsCons([
-            'matchId' => $matchId,
-            'lang' => $lang,
-        ]);
+        return $this->handleResponse(
+                $this->yourApi->apiGetProductProsCons([
+                'matchId' => $matchId,
+                'lang' => $lang,
+            ])
+        );
     }
 
     /**
@@ -92,11 +113,13 @@ class ApiProxy implements ApiProxyInterface
      */
     public function getProductBullets(string $matchId, string $lang, ?string $secretKey = null): mixed
     {
-        return $this->yourApi->apiGetProductBullets([
-            'matchId' => $matchId,
-            'lang' => $lang,
-            'secretKey' => $secretKey,
-        ]);
+        return $this->handleResponse(
+            $this->yourApi->apiGetProductBullets([
+                'matchId' => $matchId,
+                'lang' => $lang,
+                'secretKey' => $secretKey,
+            ])
+        );
     }
 
     /**
@@ -104,10 +127,12 @@ class ApiProxy implements ApiProxyInterface
      */
     public function getProductReasonsToBuy(string $matchId, string $lang): mixed
     {
-        return $this->yourApi->apiGetProductReasonsToBuy([
-            'matchId' => $matchId,
-            'lang' => $lang,
-        ]);
+        return $this->handleResponse(
+            $this->yourApi->apiGetProductReasonsToBuy([
+                'matchId' => $matchId,
+                'lang' => $lang,
+            ])
+        );
     }
 
     /**
@@ -115,10 +140,12 @@ class ApiProxy implements ApiProxyInterface
      */
     public function getProductSpecifications(string $matchId, string $lang): mixed
     {
-        return $this->yourApi->apiGetProductSpecifications([
-            'matchId' => $matchId,
-            'lang' => $lang,
-        ]);
+        return $this->handleResponse(
+            $this->yourApi->apiGetProductSpecifications([
+                'matchId' => $matchId,
+                'lang' => $lang,
+            ])
+        );
     }
 
     /**
@@ -130,12 +157,14 @@ class ApiProxy implements ApiProxyInterface
         ?int $page = null,
         ?int $resultsPerPage = null
     ): mixed {
-        return $this->yourApi->apiGetProductReviews([
-            'matchId' => $matchId,
-            'lang' => $lang,
-            'page' => $page,
-            'resultsPerPage' => $resultsPerPage,
-        ]);
+        return $this->handleResponse(
+            $this->yourApi->apiGetProductReviews([
+                'matchId' => $matchId,
+                'lang' => $lang,
+                'page' => $page,
+                'resultsPerPage' => $resultsPerPage,
+            ])
+        );
     }
 
     /**
@@ -147,12 +176,14 @@ class ApiProxy implements ApiProxyInterface
         ?int $page = null,
         ?int $resultsPerPage = null
     ): mixed {
-        return $this->yourApi->apiGetProductQnAQuestions([
-            'matchId' => $matchId,
-            'lang' => $lang,
-            'page' => $page,
-            'resultsPerPage' => $resultsPerPage,
-        ]);
+        return $this->handleResponse(
+            $this->yourApi->apiGetProductQnAQuestions([
+                'matchId' => $matchId,
+                'lang' => $lang,
+                'page' => $page,
+                'resultsPerPage' => $resultsPerPage,
+            ])
+        );
     }
 
     /**
@@ -164,9 +195,22 @@ class ApiProxy implements ApiProxyInterface
             $answeredByUserOnly = $answeredByUserOnly ? 'true' : 'false';
         }
 
-        return $this->yourApi->apiGetQnAQuestionAnswers([
-            'questionId' => $questionId,
-            'answeredByUserOnly' => $answeredByUserOnly
-        ]);
+        return $this->handleResponse(
+            $this->yourApi->apiGetQnAQuestionAnswers([
+                'questionId' => $questionId,
+                'answeredByUserOnly' => $answeredByUserOnly
+            ])
+        );
+    }
+
+    /**
+     * @param ApiResponse $response
+     * @return string
+     */
+    private function handleResponse(ApiResponse $response): string
+    {
+        $this->response->setHttpResponseCode($response->getHttpStatus());
+
+        return $response->getResponse();
     }
 }
