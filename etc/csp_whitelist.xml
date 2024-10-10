@@ -4,6 +4,23 @@
         <policy id="img-src">
             <values>
                 <value id="your-integration-img-src-loom" type="host">*.loom.com</value>
+                <value id="your-integration-img-src-wasabisys" type="host">*.wasabisys.com</value>
+            </values>
+        </policy>
+        <policy id="script-src">
+            <values>
+                <value id="your-integration-script-src-jsdelivr" type="host">*.jsdelivr.net</value>
+                <value id="your-integration-script-src-cloudflare" type="host">*.cloudflare.com</value>
+            </values>
+        </policy>
+        <policy id="style-src">
+            <values>
+                <value id="your-integration-style-src-cloudflare" type="host">*.cloudflare.com</value>
+            </values>
+        </policy>
+        <policy id="connect-src">
+            <values>
+                <value id="your-integration-connect-src-wasabisys" type="host">*.wasabisys.com</value>
             </values>
         </policy>
     </policies>

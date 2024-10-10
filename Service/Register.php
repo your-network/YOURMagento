@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Your\Integration\Service;
 
 use Magento\Backend\Model\Auth\Session;
-use Magento\Framework\Locale\Resolver;
 use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\App\Cache\Type\Config as ConfigCache;
 use Magento\Framework\App\Config\Storage\WriterInterface;
@@ -23,11 +22,6 @@ class Register
      * @var Session
      */
     private Session $adminSession;
-
-    /**
-     * @var Resolver
-     */
-    private Resolver $localeResolver;
 
     /**
      * @var Information
@@ -66,7 +60,6 @@ class Register
 
     /**
      * @param Session $adminSession
-     * @param Resolver $localeResolver
      * @param Information $information
      * @param TypeListInterface $cacheTypeList
      * @param StoreManagerInterface $storeManager
@@ -77,7 +70,6 @@ class Register
      */
     public function __construct(
         Session $adminSession,
-        Resolver $localeResolver,
         Information $information,
         TypeListInterface $cacheTypeList,
         StoreManagerInterface $storeManager,
@@ -87,7 +79,6 @@ class Register
         YourApi $yourApi
     ) {
         $this->adminSession = $adminSession;
-        $this->localeResolver = $localeResolver;
         $this->information = $information;
         $this->cacheTypeList = $cacheTypeList;
         $this->storeManager = $storeManager;
@@ -103,10 +94,6 @@ class Register
      */
     public function execute(): void
     {
-        if ($this->config->getApiKey()) {
-            return;
-        }
-
         $result = $this->yourApi->apiPostShopRegister($this->getRegistrationData());
         try {
             $result = $this->json->unserialize($result);
@@ -118,6 +105,11 @@ class Register
             throw new LocalizedException(__('No API Provided In Registration Response'));
         }
 
+        $clientScript = $this->yourApi->apiGetEmbedSnippet([
+            'locale' => $this->config->getContentLanguage()
+        ]);
+
+        $this->configWriter->save(Config::XML_PATH_CLIENT_SCRIPT, $clientScript);
         $this->configWriter->save(Config::XML_PATH_API_KEY, $result['apiKey']);
         $this->cacheTypeList->cleanType(ConfigCache::TYPE_IDENTIFIER);
     }
@@ -143,9 +135,8 @@ class Register
         $embedWebhookUrl = '';
 
         $website = $store->getBaseUrl();
-        $locale = $this->localeResolver->getLocale();
         $currencyCode = $store->getBaseCurrency()->getCode();
-        $languageCode = strtolower(strstr($locale, '_', true));
+        $languageCode = $this->config->getContentLanguage();
 
         return [
             'magentoId' => $magentoId,

@@ -7,16 +7,16 @@
             <resource>Your_Integration::your_integration_configuration</resource>
             <group id="general" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Configuration</label>
-                <field id="api_key" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="api_key" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
                     <frontend_model>Your\Integration\Block\Adminhtml\System\Config\ApiKey</frontend_model>
                     <label>API Key</label>
                 </field>
-                <field id="mpn_attribute_code" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="mpn_attribute_code" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
                     <label>MPN Attribute</label>
                     <source_model>Your\Integration\Model\System\Config\Source\Attribute</source_model>
                     <frontend_model>Your\Integration\Block\Adminhtml\System\Config\GtinMpn</frontend_model>
                 </field>
-                <field id="gtin_attribute_code" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="gtin_attribute_code" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
                     <label>GTIN Attribute</label>
                     <source_model>Your\Integration\Model\System\Config\Source\Attribute</source_model>
                     <frontend_model>Your\Integration\Block\Adminhtml\System\Config\GtinMpn</frontend_model>
@@ -25,6 +25,10 @@
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>Enables / Disables The Output Of All Streamed Content Widgets</comment>
+                </field>
+                <field id="content_language" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Content Language</label>
+                    <source_model>Your\Integration\Model\System\Config\Source\ContentLanguage</source_model>
                 </field>
             </group>
         </section>

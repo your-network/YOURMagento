@@ -14,6 +14,8 @@ class Config
     public const XML_PATH_API_BASE_URL = 'your_integration/general/api_base_url';
     public const XML_PATH_MPN_ATTRIBUTE_CODE = 'your_integration/general/mpn_attribute_code';
     public const XML_PATH_GTIN_ATTRIBUTE_CODE = 'your_integration/general/gtin_attribute_code';
+    public const XML_PATH_CONTENT_LANGUAGE = 'your_integration/general/content_language';
+    public const XML_PATH_CLIENT_SCRIPT = 'your_integration/general/client_script';
 
     /**
      * @var ScopeConfigInterface
@@ -34,7 +36,10 @@ class Config
      */
     public function getIsConfigured(): bool
     {
-        return $this->getApiKey() && $this->hasIdentifierAttributesConfigured();
+        return $this->getApiKey()
+            && $this->getIsEnabled()
+            && $this->getClientScript()
+            && $this->hasIdentifierAttributesConfigured();
     }
 
     /**
@@ -42,7 +47,8 @@ class Config
      */
     public function hasIdentifierAttributesConfigured(): bool
     {
-        return $this->getGtinAttributeCode() || $this->getMpnAttributeCode();
+        return $this->getGtinAttributeCode()
+            || $this->getMpnAttributeCode();
     }
 
     /**
@@ -98,5 +104,29 @@ class Config
             self::XML_PATH_GTIN_ATTRIBUTE_CODE,
             ScopeInterface::SCOPE_STORE
         ));
+    }
+
+    /**
+     * @return string
+     */
+    public function getContentLanguage(): string
+    {
+        $language = (string)$this->scopeConfig->getValue(
+            self::XML_PATH_CONTENT_LANGUAGE,
+            ScopeInterface::SCOPE_STORE
+        );
+
+        return $language ?: 'en';
+    }
+
+    /**
+     * @return string
+     */
+    public function getClientScript(): string
+    {
+        return (string)$this->scopeConfig->getValue(
+            self::XML_PATH_CLIENT_SCRIPT,
+            ScopeInterface::SCOPE_STORE
+        );
     }
 }

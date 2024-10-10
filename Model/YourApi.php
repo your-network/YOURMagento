@@ -54,7 +54,7 @@ class YourApi
     public const REGISTRATION_API_KEY       = 'afc29d1a-8f4b-4e99-a8b9-3e23f7f7602d';
 
     /**
-     * What URL is requested in Magento -> What YOUR API URL must be called
+     * What URL is requested in Magento admin -> What YOUR API URL must be called
      */
     private const API_REQUEST_URL_MAPPING = [
         'Activity/Shop/Topic' => self::ENDPOINT_PATH_ACTIVITY_SHOP_TOPIC,
@@ -237,13 +237,16 @@ class YourApi
     }
 
     /**
+     *
      * @param array $params
      * @return string
      */
     public function apiGetEmbedSnippet(array $params): string
     {
+        // Normalize to accept both - {locale}.js and {locale} as valid param
+        $locale = str_replace('.js', '', $params['locale'] ?? '') . '.js';
         $url = $this->getYourApiUrl(self::ENDPOINT_PATH_EMBED_SNIPPET);
-        $url = str_replace('{locale}.js', $params['locale'] ?? '', $url);
+        $url = str_replace('{locale}.js', $locale, $url);
 
         return $this->makeRequest(
             $url,
@@ -389,7 +392,7 @@ class YourApi
     public function apiGetQnAQuestionAnswers(array $params): string
     {
         $url = $this->getYourApiUrl(self::ENDPOINT_PATH_QA_QUESTION_ANSWERS);
-        $url = str_replace('{questionId}', $params['questionId'] ?? '', $url);
+        $url = str_replace('{questionId}', (string)$params['questionId'] ?? '', $url);
         unset($params['questionId']);
 
         return $this->makeRequest(

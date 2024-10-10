@@ -1,0 +1,22 @@
+<?php
+/**
+ * @var $secureRenderer \Magento\Framework\View\Helper\SecureHtmlRenderer
+ * @var $viewModel \Your\Integration\ViewModel\ClientScripts
+ * @var $block \Magento\Framework\View\Element\Template
+ */
+$viewModel = $block->getViewModel();
+?>
+<?php
+if ($viewModel->getCanShow()) {
+    $clientScript = $viewModel->getClientScript();
+    $config = $viewModel->getConfig();
+    $js = <<<JS
+(function () {
+    window.your = window.your || {};
+    window.your.config = $config;
+    $clientScript;
+})();
+JS;
+    /* @NoEscape */ echo $secureRenderer->renderTag('script', [], $js, false);
+}
+?>

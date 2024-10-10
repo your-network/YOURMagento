@@ -60,7 +60,7 @@
             <resource ref="anonymous"/>
         </resources>
     </route>
-    <route url="/V1/your-integration/Product/QnAQuestions" method="GET">
+    <route url="/V1/your-integration/Product/QnA/Questions" method="GET">
         <service class="Your\Integration\Api\ApiProxyInterface" method="getProductQnAQuestions"/>
         <resources>
             <resource ref="anonymous"/>
