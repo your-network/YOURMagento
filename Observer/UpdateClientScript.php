@@ -6,40 +6,23 @@ namespace Your\Integration\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Framework\App\Config\Storage\WriterInterface;
+use Your\Integration\Service\ClientScriptUpdate;
 use Your\Integration\Model\System\Config;
-use Your\Integration\Model\YourApi;
 
 class UpdateClientScript implements ObserverInterface
 {
     /**
-     * @var WriterInterface
+     * @var ClientScriptUpdate
      */
-    private WriterInterface $configWriter;
+    private ClientScriptUpdate $clientScriptUpdate;
 
     /**
-     * @var Config
-     */
-    private Config $config;
-
-    /**
-     * @var YourApi
-     */
-    private YourApi $yourApi;
-
-    /**
-     * @param WriterInterface $configWriter
-     * @param Config $config
-     * @param YourApi $yourApi
+     * @param ClientScriptUpdate $clientScriptUpdate
      */
     public function __construct(
-        WriterInterface $configWriter,
-        Config $config,
-        YourApi $yourApi
+        ClientScriptUpdate $clientScriptUpdate,
     ) {
-        $this->configWriter = $configWriter;
-        $this->config = $config;
-        $this->yourApi = $yourApi;
+        $this->clientScriptUpdate = $clientScriptUpdate;
     }
 
     /**
@@ -57,17 +40,8 @@ class UpdateClientScript implements ObserverInterface
             $changedPaths
         );
 
-        $needsScript = $this->config->getApiKey() && !$this->config->getClientScript();
-        if (!$configHasChanged && !$needsScript) {
-            return;
-        }
-
-        $clientScript = $this->yourApi->apiGetEmbedSnippet([
-            'locale' => $this->config->getContentLanguage()
-        ])->getResponse();
-
-        if ($clientScript) {
-            $this->configWriter->save(Config::XML_PATH_CLIENT_SCRIPT, $clientScript);
+        if ($configHasChanged) {
+            $this->clientScriptUpdate->execute(false);
         }
     }
 }

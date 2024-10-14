@@ -103,4 +103,9 @@ interface ApiProxyInterface
      * @return mixed
      */
     public function getQnAQuestionAnswers(int $questionId, ?bool $answeredByUserOnly = null): mixed;
+
+    /**
+     * @return mixed
+     */
+    public function clientScriptWebhook(): bool;
 }

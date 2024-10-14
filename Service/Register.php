@@ -18,6 +18,8 @@ use Your\Integration\Model\YourApi;
 
 class Register
 {
+    public const WEBHOOK_URL_PATH = 'rest/all/V1/your-integration/ClientScriptWebhook';
+
     /**
      * @var Session
      */
@@ -49,6 +51,16 @@ class Register
     private Json $json;
 
     /**
+     * @var ClientScriptUpdate
+     */
+    private ClientScriptUpdate $clientScriptUpdate;
+
+    /**
+     * @var IntegrationManager
+     */
+    private IntegrationManager $integrationManager;
+
+    /**
      * @var Config
      */
     private Config $config;
@@ -65,6 +77,8 @@ class Register
      * @param StoreManagerInterface $storeManager
      * @param WriterInterface $configWriter
      * @param Json $json
+     * @param ClientScriptUpdate $clientScriptUpdate
+     * @param IntegrationManager $integrationManager
      * @param Config $config
      * @param YourApi $yourApi
      */
@@ -75,6 +89,8 @@ class Register
         StoreManagerInterface $storeManager,
         WriterInterface $configWriter,
         Json $json,
+        ClientScriptUpdate $clientScriptUpdate,
+        IntegrationManager $integrationManager,
         Config $config,
         YourApi $yourApi
     ) {
@@ -84,6 +100,8 @@ class Register
         $this->storeManager = $storeManager;
         $this->configWriter = $configWriter;
         $this->json = $json;
+        $this->clientScriptUpdate = $clientScriptUpdate;
+        $this->integrationManager = $integrationManager;
         $this->config = $config;
         $this->yourApi = $yourApi;
     }
@@ -96,6 +114,7 @@ class Register
     {
         $result = $this->yourApi->apiPostShopRegister($this->getRegistrationData())
             ->getResponse();
+
         try {
             $result = $this->json->unserialize($result);
         } catch (\Exception) {
@@ -106,42 +125,37 @@ class Register
             throw new LocalizedException(__('No API Provided In Registration Response'));
         }
 
-        $clientScript = $this->yourApi->apiGetEmbedSnippet([
-            'locale' => $this->config->getContentLanguage()
-        ])->getResponse();
-
-        $this->configWriter->save(Config::XML_PATH_CLIENT_SCRIPT, $clientScript);
         $this->configWriter->save(Config::XML_PATH_API_KEY, $result['apiKey']);
         $this->cacheTypeList->cleanType(ConfigCache::TYPE_IDENTIFIER);
+        $this->clientScriptUpdate->execute();
     }
 
     /**
      * @return array
      */
-    public function getRegistrationData(): array
+    private function getRegistrationData(): array
     {
         /** @var Store $store */
         try {
             $store = $this->storeManager->getStore();
+            $embedWebhookUrl = $store->getUrl(null, [
+                '_direct' => self::WEBHOOK_URL_PATH
+            ]);
             $adminUser = $this->adminSession->getUser();
         } catch (\Exception) {
             return [];
         }
 
-        $storeInformation = $this->information
-            ->getStoreInformationObject($store);
-
-        $magentoId = 'y92sorilnvujbfhvh42t5ztz3uchn4dj';
-        $magentoApiKey = 'y92sorilnvujbfhvh42t5ztz3uchn4dj';
-        $embedWebhookUrl = '';
+        $integrationCredentials = $this->integrationManager->getIntegrationCredentials();
+        $storeInformation = $this->information->getStoreInformationObject($store);
 
         $website = $store->getBaseUrl();
         $currencyCode = $store->getBaseCurrency()->getCode();
         $languageCode = $this->config->getContentLanguage();
 
         return [
-            'magentoId' => $magentoId,
-            'magentoApiKey' => $magentoApiKey,
+            'magentoId' => $integrationCredentials['access_token'],
+            'magentoApiKey' => $integrationCredentials['access_token'],
             'embedWebhookUrl' => $embedWebhookUrl,
             'organization' => [
                 'name' => $storeInformation->getName(),
@@ -165,13 +179,5 @@ class Register
                 'personalName' => $adminUser->getName(),
             ]
         ];
-    }
-
-    /**
-     * @return array
-     */
-    public function createIntegration(): array
-    {
-        return [];
     }
 }

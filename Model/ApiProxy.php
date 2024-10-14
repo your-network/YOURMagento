@@ -6,6 +6,7 @@ namespace Your\Integration\Model;
 
 use Magento\Framework\Webapi\Rest\Response;
 use Your\Integration\Api\ApiProxyInterface;
+use Your\Integration\Service\ClientScriptUpdate;
 
 class ApiProxy implements ApiProxyInterface
 {
@@ -20,15 +21,23 @@ class ApiProxy implements ApiProxyInterface
     private YourApi $yourApi;
 
     /**
+     * @var ClientScriptUpdate
+     */
+    private ClientScriptUpdate $clientScriptUpdate;
+
+    /**
      * @param Response $response
      * @param YourApi $yourApi
+     * @param ClientScriptUpdate $clientScriptUpdate
      */
     public function __construct(
         Response $response,
-        YourApi $yourApi
+        YourApi $yourApi,
+        ClientScriptUpdate $clientScriptUpdate
     ) {
         $this->response = $response;
         $this->yourApi = $yourApi;
+        $this->clientScriptUpdate = $clientScriptUpdate;
     }
 
     /**
@@ -201,6 +210,14 @@ class ApiProxy implements ApiProxyInterface
                 'answeredByUserOnly' => $answeredByUserOnly
             ])
         );
+    }
+
+    /**
+     * @return bool
+     */
+    public function clientScriptWebhook(): bool
+    {
+        return $this->clientScriptUpdate->execute();
     }
 
     /**

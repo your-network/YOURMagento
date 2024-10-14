@@ -2,7 +2,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
     <menu>
         <add id="Your_Integration::your_integration" title="YOUR Product Content" translate="title" module="Your_Integration" sortOrder="55" dependsOnModule="Your_Integration" resource="Your_Integration::your_integration"/>
-        <add id="Your_Integration::your_integration_dashboard" title="Dashboard" translate="title" module="Your_Integration" sortOrder="10" parent="Your_Integration::your_integration" action="your_integration/dashboard/index" resource="Your_Integration::your_integration_dashboard" target="_blank"/>
+        <add id="Your_Integration::your_integration_dashboard" title="Dashboard" translate="title" module="Your_Integration" sortOrder="10" parent="Your_Integration::your_integration" action="your_integration/dashboard/index" resource="Your_Integration::your_integration_dashboard"/>
         <add id="Your_Integration::your_integration_configuration" title="Configuration" translate="title" module="Your_Integration" sortOrder="20" parent="Your_Integration::your_integration" action="adminhtml/system_config/edit/section/your_integration" resource="Your_Integration::your_integration_configuration"/>
     </menu>
 </config>

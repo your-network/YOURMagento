@@ -72,4 +72,10 @@
             <resource ref="anonymous"/>
         </resources>
     </route>
+    <route url="/V1/your-integration/ClientScriptWebhook" method="GET">
+        <service class="Your\Integration\Api\ApiProxyInterface" method="clientScriptWebhook"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
 </routes>

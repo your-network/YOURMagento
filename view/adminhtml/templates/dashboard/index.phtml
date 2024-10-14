@@ -1,0 +1,11 @@
+<?php
+/**
+ * @var $escaper \Magento\Framework\Escaper
+ * @var $block \Magento\Backend\Block\Template
+ * @var $viewModel \Your\Integration\ViewModel\Adminhtml\Dashboard
+ */
+$viewModel = $block->getViewModel();
+?>
+<div class="yi-iframe">
+    <?= $viewModel->getContent() ?: __('No Content Retrieved From YOUR API') ?>
+</div>

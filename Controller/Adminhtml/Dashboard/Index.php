@@ -51,11 +51,15 @@ class Index extends Action implements HttpGetActionInterface
                 ->setUrl($this->getUrl('adminhtml/system_config/edit/section/your_integration'));
         }
 
+        $resultPage = $this->resultFactory->create(ResultFactory::TYPE_PAGE);
+        $resultPage->setActiveMenu('Your_Integration::your_integration');
+        $resultPage->getConfig()->getTitle()->prepend(__('Dashboard'));
+
         $response = $this->yourApi->replaceIntegrationPath(
             $this->yourApi->apiGetHome()->getResponse(),
             $this->yourApi->getMagentoAdminApiUrl()
         );
 
-        return $this->resultFactory->create(ResultFactory::TYPE_RAW)->setContents($response);
+        return $resultPage;
     }
 }
