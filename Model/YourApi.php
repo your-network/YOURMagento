@@ -33,6 +33,7 @@ class YourApi
     public const ENDPOINT_PATH_PRODUCT_REVIEWS        = '/Magento/Product/Reviews';
     public const ENDPOINT_PATH_PRODUCT_QA_QUESTIONS   = '/Magento/Product/QnA/Questions';
     public const ENDPOINT_PATH_QA_QUESTION_ANSWERS    = '/Magento/QnA/Question/{questionId}/Answers';
+    public const ENDPOINT_PATH_CATALOG_PRODUCT_PREVIEW = '/Magento/Catalog/Product/Preview';
 
     public const ENDPOINT_PATH_SHOP                 = '/Magento/Shop';
     public const ENDPOINT_PATH_SHOP_REGISTER        = '/Magento/Shop/Register';
@@ -69,6 +70,7 @@ class YourApi
         'Subscription/Downgrade' => self::ENDPOINT_PATH_SUBSCRIPTION_DOWNGRADE,
         'Subscription/CostPrediction' => self::ENDPOINT_PATH_SUBSCRIPTION_COST_PREDICTION,
         'Payment/Stripe/SetupIntent' => self::ENDPOINT_PATH_PAYMENT_STRIPE_SETUP_INTENT,
+        'Catalog/Product/Preview' => self::ENDPOINT_PATH_CATALOG_PRODUCT_PREVIEW,
     ];
 
     /**

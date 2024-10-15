@@ -57,12 +57,7 @@ class IntegrationManager
                 'access_token_secret' => $accessToken->getSecret(),
             ];
         } catch (\Exception) {
-            return [
-                'consumer_key' => '',
-                'consumer_secret' => '',
-                'access_token' => '',
-                'access_token_secret' => '',
-            ];
+            return [];
         }
 
         return $credentials;

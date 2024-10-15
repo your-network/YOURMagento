@@ -120,9 +120,12 @@ class Register
      */
     public function execute(): void
     {
-        $result = $this->yourApi->apiPostShopRegister($this->getRegistrationData())
-            ->getResponse();
+        $registrationData = $this->getRegistrationData();
+        if (!$registrationData) {
+            throw new LocalizedException(__('Registration Data Could Not Be Collected'));
+        }
 
+        $result = $this->yourApi->apiPostShopRegister($registrationData)->getResponse();
         try {
             $result = $this->json->unserialize($result);
         } catch (\Exception) {
@@ -130,11 +133,11 @@ class Register
         }
 
         if (isset($result['success']) && $result['success'] === false) {
-            throw new \Exception($result['message'] ?? __('API Responded With An Error'));
+            throw new \Exception($result['message'] ?? __('API Responded With An Unknown Error'));
         }
 
         if (!isset($result['apiKey'])) {
-            throw new LocalizedException(__('No API Key Provided In Registration Response'));
+            throw new LocalizedException(__('No API Key Provided In The Registration Response'));
         }
 
         $this->configWriter->save(Config::XML_PATH_API_KEY, $result['apiKey']);
@@ -154,25 +157,29 @@ class Register
                 '_direct' => self::WEBHOOK_URL_PATH
             ]);
             $adminUser = $this->adminSession->getUser();
-            $magentoId = $this->shopIdGenerator->getShopId();
+            $shopId = $this->shopIdGenerator->getShopId();
         } catch (\Exception) {
             return [];
         }
 
         $integrationCredentials = $this->integrationManager->getIntegrationCredentials();
-        $storeInformation = $this->information->getStoreInformationObject($store);
+        if (!$integrationCredentials) {
+            return [];
+        }
 
+        $storeInformation = $this->information->getStoreInformationObject($store);
         $website = $store->getBaseUrl();
-        $currencyCode = $store->getBaseCurrency()->getCode();
-        $languageCode = $this->config->getContentLanguage();
-        $organizationName = $storeInformation->getName() ?: $website;
 
         return [
-            'magentoId' => $magentoId,
+            'magentoId' => $shopId,
             'magentoApiKey' => $integrationCredentials['access_token'],
+            'consumerKey' => $integrationCredentials['consumer_key'],
+            'consumerSecret' => $integrationCredentials['consumer_secret'],
+            'accessToken' => $integrationCredentials['access_token'],
+            'accessTokenSecret' => $integrationCredentials['access_token_secret'],
             'embedWebhookUrl' => $embedWebhookUrl,
             'organization' => [
-                'name' => $organizationName,
+                'name' => $storeInformation->getName() ?: $website,
                 'city' => $storeInformation->getCity(),
                 'address' => $storeInformation->getData('street_line1'),
                 'houseNumber' => $storeInformation->getData('street_line2'),
@@ -180,8 +187,8 @@ class Register
                 'country' => $storeInformation->getCountryId(),
                 'phoneNumber' => $storeInformation->getPhone(),
                 'vatNumber' => $storeInformation->getVatNumber(),
-                'currencyCode' => $currencyCode,
-                'contentLanguage' => $languageCode,
+                'currencyCode' => $store->getBaseCurrency()->getCode(),
+                'contentLanguage' => $this->config->getContentLanguage(),
                 'website' => $website,
                 'notifications' => [
                     'email' => true

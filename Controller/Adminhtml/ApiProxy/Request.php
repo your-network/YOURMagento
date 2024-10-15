@@ -10,12 +10,16 @@ use Magento\Framework\App\Request\Http;
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\App\Action\HttpPostActionInterface;
+use Magento\Framework\App\Action\HttpPatchActionInterface;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Controller\ResultFactory;
 use Your\Integration\Model\System\Config;
 use Your\Integration\Model\YourApi;
 
-class Request extends Action implements HttpGetActionInterface, HttpPostActionInterface
+class Request extends Action implements
+    HttpGetActionInterface,
+    HttpPostActionInterface,
+    HttpPatchActionInterface
 {
     const ADMIN_RESOURCE = 'Your_Integration::your_integration_dashboard';
 
