@@ -100,7 +100,7 @@ class ClientScripts implements ArgumentInterface
             $matchIds[] = $product->getData($attributeCode);
         }
 
-        return $matchIds;
+        return array_filter($matchIds);
     }
 
     /**

@@ -61,6 +61,11 @@ class Register
     private IntegrationManager $integrationManager;
 
     /**
+     * @var ShopIdGenerator
+     */
+    private ShopIdGenerator $shopIdGenerator;
+
+    /**
      * @var Config
      */
     private Config $config;
@@ -79,6 +84,7 @@ class Register
      * @param Json $json
      * @param ClientScriptUpdate $clientScriptUpdate
      * @param IntegrationManager $integrationManager
+     * @param ShopIdGenerator $shopIdGenerator
      * @param Config $config
      * @param YourApi $yourApi
      */
@@ -91,6 +97,7 @@ class Register
         Json $json,
         ClientScriptUpdate $clientScriptUpdate,
         IntegrationManager $integrationManager,
+        ShopIdGenerator $shopIdGenerator,
         Config $config,
         YourApi $yourApi
     ) {
@@ -102,13 +109,14 @@ class Register
         $this->json = $json;
         $this->clientScriptUpdate = $clientScriptUpdate;
         $this->integrationManager = $integrationManager;
+        $this->shopIdGenerator = $shopIdGenerator;
         $this->config = $config;
         $this->yourApi = $yourApi;
     }
 
     /**
      * @return void
-     * @throws LocalizedException
+     * @throws LocalizedException|\Exception
      */
     public function execute(): void
     {
@@ -121,8 +129,12 @@ class Register
             throw new LocalizedException(__('Invalid API Response During Registration'));
         }
 
+        if (isset($result['success']) && $result['success'] === false) {
+            throw new \Exception($result['message'] ?? __('API Responded With An Error'));
+        }
+
         if (!isset($result['apiKey'])) {
-            throw new LocalizedException(__('No API Provided In Registration Response'));
+            throw new LocalizedException(__('No API Key Provided In Registration Response'));
         }
 
         $this->configWriter->save(Config::XML_PATH_API_KEY, $result['apiKey']);
@@ -142,6 +154,7 @@ class Register
                 '_direct' => self::WEBHOOK_URL_PATH
             ]);
             $adminUser = $this->adminSession->getUser();
+            $magentoId = $this->shopIdGenerator->getShopId();
         } catch (\Exception) {
             return [];
         }
@@ -152,13 +165,14 @@ class Register
         $website = $store->getBaseUrl();
         $currencyCode = $store->getBaseCurrency()->getCode();
         $languageCode = $this->config->getContentLanguage();
+        $organizationName = $storeInformation->getName() ?: $website;
 
         return [
-            'magentoId' => $integrationCredentials['access_token'],
+            'magentoId' => $magentoId,
             'magentoApiKey' => $integrationCredentials['access_token'],
             'embedWebhookUrl' => $embedWebhookUrl,
             'organization' => [
-                'name' => $storeInformation->getName(),
+                'name' => $organizationName,
                 'city' => $storeInformation->getCity(),
                 'address' => $storeInformation->getData('street_line1'),
                 'houseNumber' => $storeInformation->getData('street_line2'),

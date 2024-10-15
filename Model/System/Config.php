@@ -11,6 +11,7 @@ class Config
 {
     public const XML_PATH_ENABLED = 'your_integration/general/enabled';
     public const XML_PATH_API_KEY = 'your_integration/general/api_key';
+    public const XML_PATH_SHOP_ID = 'your_integration/general/shop_id';
     public const XML_PATH_API_BASE_URL = 'your_integration/general/api_base_url';
     public const XML_PATH_MPN_ATTRIBUTE_CODE = 'your_integration/general/mpn_attribute_code';
     public const XML_PATH_GTIN_ATTRIBUTE_CODE = 'your_integration/general/gtin_attribute_code';
@@ -70,6 +71,16 @@ class Config
         return (string)$this->scopeConfig->getValue(
             self::XML_PATH_API_KEY,
             ScopeInterface::SCOPE_STORE
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function getShopId(): string
+    {
+        return (string)$this->scopeConfig->getValue(
+            self::XML_PATH_SHOP_ID
         );
     }
 
