@@ -47,7 +47,7 @@ class Register extends Action implements HttpGetActionInterface
     public function execute(): ResultInterface
     {
         $result = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT)
-            ->setUrl($this->getUrl('adminhtml/system_config/edit/section/your_integration'));
+            ->setUrl($this->getUrl('your_integration/dashboard/index'));
 
         if ($this->config->getApiKey()) {
             return $result;
@@ -57,6 +57,7 @@ class Register extends Action implements HttpGetActionInterface
             $this->registerService->execute();
         } catch (\Exception $exception) {
             $this->messageManager->addErrorMessage($exception->getMessage());
+            $result->setUrl($this->getUrl('adminhtml/system_config/edit/section/your_integration'));
         }
 
         return $result;
