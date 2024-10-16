@@ -6,7 +6,7 @@ namespace Your\Integration\Model;
 
 use Laminas\Http\Request;
 use Magento\Backend\Model\UrlInterface;
-use Magento\Framework\HTTP\Client\CurlFactory;
+use Magento\Framework\HTTP\LaminasClientFactory;
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Store\Model\StoreManagerInterface;
 use Your\Integration\Model\System\Config;
@@ -71,6 +71,7 @@ class YourApi
         'Subscription/CostPrediction' => self::ENDPOINT_PATH_SUBSCRIPTION_COST_PREDICTION,
         'Payment/Stripe/SetupIntent' => self::ENDPOINT_PATH_PAYMENT_STRIPE_SETUP_INTENT,
         'Catalog/Product/Preview' => self::ENDPOINT_PATH_CATALOG_PRODUCT_PREVIEW,
+        'embed/snippet' => self::ENDPOINT_PATH_EMBED_SNIPPET,
     ];
 
     /**
@@ -79,9 +80,9 @@ class YourApi
     private UrlInterface $backendUrl;
 
     /**
-     * @var CurlFactory
+     * @var LaminasClientFactory
      */
-    private CurlFactory $curlFactory;
+    private LaminasClientFactory $httpClientFactory;
 
     /**
      * @var StoreManagerInterface
@@ -105,7 +106,7 @@ class YourApi
 
     /**
      * @param UrlInterface $backendUrl
-     * @param CurlFactory $curlFactory
+     * @param LaminasClientFactory $httpClientFactory
      * @param StoreManagerInterface $storeManager
      * @param Json $json
      * @param Config $config
@@ -113,14 +114,14 @@ class YourApi
      */
     public function __construct(
         UrlInterface $backendUrl,
-        CurlFactory $curlFactory,
+        LaminasClientFactory $httpClientFactory,
         StoreManagerInterface $storeManager,
         Json $json,
         Config $config,
         ApiResponseFactory $apiResponseFactory
     ) {
         $this->backendUrl = $backendUrl;
-        $this->curlFactory = $curlFactory;
+        $this->httpClientFactory = $httpClientFactory;
         $this->storeManager = $storeManager;
         $this->json = $json;
         $this->config = $config;
@@ -173,11 +174,16 @@ class YourApi
 
     /**
      * @param string $endpoint
+     * @param array $params
      * @return string
      */
-    public function getMappedApiUrl(string $endpoint): string
+    public function getMappedApiUrl(string $endpoint, array $params = []): string
     {
         $mappedUrl = self::API_REQUEST_URL_MAPPING[$endpoint] ?? '';
+
+        if ($mappedUrl === self::ENDPOINT_PATH_EMBED_SNIPPET) {
+            $mappedUrl = str_replace('{locale}', $params['locale'] ?? 'en', $mappedUrl);
+        }
 
         if ($mappedUrl) {
             return $this->getYourApiUrl($mappedUrl);
@@ -199,22 +205,35 @@ class YourApi
         string $apiKey = '',
         string $method = Request::METHOD_GET,
     ): ApiResponse {
-        $client = $this->curlFactory->create();
-        $client->addHeader('Content-Type', 'application/json');
+        $client = $this->httpClientFactory->create();
+        $headers = ['Content-Type' => 'Content-Type: application/json'];
 
         if ($apiKey) {
-            $client->addHeader('Authorization', 'Basic ' . $apiKey);
+            $headers['Authorization'] = 'Authorization: Basic ' . $apiKey;
         }
 
-        if ($method === Request::METHOD_POST) {
-            $client->post($uri, $this->json->serialize($params));
-        } else {
-            $client->get($params ? $uri . '?' . http_build_query($params) : $uri);
+        if ($method === Request::METHOD_GET) {
+            $uri = $params ? $uri . '?' . http_build_query($params) : $uri;
+        }
+
+        if ($method === Request::METHOD_POST || $method === Request::METHOD_PATCH) {
+            $client->setRawBody($this->json->serialize($params));
+        }
+
+        $client->setUri($uri);
+        $client->setMethod($method);
+        $client->setHeaders($headers);
+        $response = $client->send();
+
+        $responseHeaders = [];
+        foreach ($response->getHeaders() as $header) {
+            $responseHeaders[$header->getFieldName()] = $header->getFieldValue();
         }
 
         return $this->apiResponseFactory->create([
-            'response' => $client->getBody(),
-            'statusCode' => $client->getStatus(),
+            'response' => $response->getBody(),
+            'statusCode' => $response->getStatusCode(),
+            'headers' => $responseHeaders,
         ]);
     }
 

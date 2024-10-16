@@ -84,7 +84,10 @@ class Request extends Action implements
 
         /** @var Http $request */
         $request = $this->_request;
-        if ($request->getMethod() === $request::METHOD_POST) {
+        if (
+            $request->getMethod() === $request::METHOD_POST
+            || $request->getMethod() === $request::METHOD_PATCH
+        ) {
             $params = $this->json->unserialize(
                 $request->getContent()
             );
@@ -99,9 +102,15 @@ class Request extends Action implements
             $request->getMethod()
         );
 
-        return $this->resultFactory->create(ResultFactory::TYPE_RAW)
+        $result = $this->resultFactory->create(ResultFactory::TYPE_RAW)
             ->setHttpResponseCode($response->getHttpStatus())
             ->setContents($response->getResponse());
+
+        foreach ($response->getHeaders() as $name => $value) {
+            $result->setHeader($name, $value);
+        }
+
+        return $result;
     }
 
     /**
@@ -109,10 +118,12 @@ class Request extends Action implements
      */
     private function getApiRequestUrl(): string
     {
+        $requestParams = $this->_request->getParams();
         $requestPath = $this->_request->getPathInfo();
+
         $apiProxyUrl = $this->yourApi->getMagentoAdminApiUrl();
         $apiRequestUrl = str_replace($apiProxyUrl, '', $requestPath);
 
-        return $this->yourApi->getMappedApiUrl($apiRequestUrl);
+        return $this->yourApi->getMappedApiUrl($apiRequestUrl, $requestParams);
     }
 }
