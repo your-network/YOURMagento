@@ -14,7 +14,7 @@ use Your\Integration\Service\Register as RegisterService;
 
 class Register extends Action implements HttpGetActionInterface
 {
-    const ADMIN_RESOURCE = 'Your_Integration::your_integration_dashboard';
+    public const ADMIN_RESOURCE = 'Your_Integration::your_integration_dashboard';
 
     /**
      * @var Config

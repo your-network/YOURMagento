@@ -13,7 +13,7 @@ use Your\Integration\Model\System\Config;
 
 class Index extends Action implements HttpGetActionInterface
 {
-    const ADMIN_RESOURCE = 'Your_Integration::your_integration_dashboard';
+    public const ADMIN_RESOURCE = 'Your_Integration::your_integration_dashboard';
 
     /**
      * @var Config

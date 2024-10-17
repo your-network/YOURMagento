@@ -11,8 +11,8 @@ use Magento\Integration\Model\Integration;
 
 class IntegrationManager
 {
-    const INTEGRATION_NAME = 'YOUR Product Content';
-    const INTEGRATION_EMAIL = 'magento-support@your.io';
+    public const INTEGRATION_NAME = 'YOUR Product Content';
+    public const INTEGRATION_EMAIL = 'magento-support@your.io';
 
     /**
      * @var IntegrationServiceInterface

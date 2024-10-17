@@ -21,7 +21,7 @@ class Request extends Action implements
     HttpPostActionInterface,
     HttpPatchActionInterface
 {
-    const ADMIN_RESOURCE = 'Your_Integration::your_integration_dashboard';
+    public const ADMIN_RESOURCE = 'Your_Integration::your_integration_dashboard';
 
     /**
      * @var Json
@@ -84,8 +84,7 @@ class Request extends Action implements
 
         /** @var Http $request */
         $request = $this->_request;
-        if (
-            $request->getMethod() === $request::METHOD_POST
+        if ($request->getMethod() === $request::METHOD_POST
             || $request->getMethod() === $request::METHOD_PATCH
         ) {
             $params = $this->json->unserialize(

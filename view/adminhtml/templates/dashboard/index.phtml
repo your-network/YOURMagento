@@ -7,5 +7,5 @@
 $viewModel = $block->getViewModel();
 ?>
 <div class="yi-iframe">
-    <?= $viewModel->getContent() ?: __('No Content Retrieved From YOUR API') ?>
+    <?= /* @noEscape */ $viewModel->getContent() ?: __('No Content Retrieved From YOUR API') ?>
 </div>

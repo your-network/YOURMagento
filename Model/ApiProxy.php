@@ -110,7 +110,7 @@ class ApiProxy implements ApiProxyInterface
     public function getProductProsCons(string $matchId, string $lang): mixed
     {
         return $this->handleResponse(
-                $this->yourApi->apiGetProductProsCons([
+            $this->yourApi->apiGetProductProsCons([
                 'matchId' => $matchId,
                 'lang' => $lang,
             ])
