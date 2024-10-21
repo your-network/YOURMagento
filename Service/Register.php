@@ -51,9 +51,9 @@ class Register
     private Json $json;
 
     /**
-     * @var ClientScriptUpdate
+     * @var ClientScriptManager
      */
-    private ClientScriptUpdate $clientScriptUpdate;
+    private ClientScriptManager $clientScriptManager;
 
     /**
      * @var IntegrationManager
@@ -82,7 +82,7 @@ class Register
      * @param StoreManagerInterface $storeManager
      * @param WriterInterface $configWriter
      * @param Json $json
-     * @param ClientScriptUpdate $clientScriptUpdate
+     * @param ClientScriptManager $clientScriptManager
      * @param IntegrationManager $integrationManager
      * @param ShopIdGenerator $shopIdGenerator
      * @param Config $config
@@ -95,7 +95,7 @@ class Register
         StoreManagerInterface $storeManager,
         WriterInterface $configWriter,
         Json $json,
-        ClientScriptUpdate $clientScriptUpdate,
+        ClientScriptManager $clientScriptManager,
         IntegrationManager $integrationManager,
         ShopIdGenerator $shopIdGenerator,
         Config $config,
@@ -107,7 +107,7 @@ class Register
         $this->storeManager = $storeManager;
         $this->configWriter = $configWriter;
         $this->json = $json;
-        $this->clientScriptUpdate = $clientScriptUpdate;
+        $this->clientScriptManager = $clientScriptManager;
         $this->integrationManager = $integrationManager;
         $this->shopIdGenerator = $shopIdGenerator;
         $this->config = $config;
@@ -142,7 +142,7 @@ class Register
 
         $this->configWriter->save(Config::XML_PATH_API_KEY, $result['apiKey']);
         $this->cacheTypeList->cleanType(ConfigCache::TYPE_IDENTIFIER);
-        $this->clientScriptUpdate->execute();
+        $this->clientScriptManager->update();
     }
 
     /**

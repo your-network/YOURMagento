@@ -9,6 +9,7 @@ use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Api\Data\ProductInterface;
+use Your\Integration\Service\ClientScriptManager;
 use Your\Integration\Model\System\Config;
 use Your\Integration\Model\YourApi;
 
@@ -30,6 +31,11 @@ class ClientScripts implements ArgumentInterface
     private Json $json;
 
     /**
+     * @var ClientScriptManager
+     */
+    private ClientScriptManager $clientScriptManager;
+
+    /**
      * @var Config
      */
     private Config $config;
@@ -43,6 +49,7 @@ class ClientScripts implements ArgumentInterface
      * @param RequestInterface $request
      * @param ProductRepositoryInterface $productRepository
      * @param Json $json
+     * @param ClientScriptManager $clientScriptManager
      * @param Config $config
      * @param YourApi $yourApi
      */
@@ -50,12 +57,14 @@ class ClientScripts implements ArgumentInterface
         RequestInterface $request,
         ProductRepositoryInterface $productRepository,
         Json $json,
+        ClientScriptManager $clientScriptManager,
         Config $config,
         YourApi $yourApi
     ) {
         $this->request = $request;
         $this->productRepository = $productRepository;
         $this->json = $json;
+        $this->clientScriptManager = $clientScriptManager;
         $this->config = $config;
         $this->yourApi = $yourApi;
     }
@@ -108,7 +117,7 @@ class ClientScripts implements ArgumentInterface
      */
     public function getClientScript(): string
     {
-        return $this->config->getClientScript();
+        return $this->clientScriptManager->getClientScript();
     }
 
     /**

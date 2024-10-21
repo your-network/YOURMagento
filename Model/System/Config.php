@@ -16,7 +16,6 @@ class Config
     public const XML_PATH_MPN_ATTRIBUTE_CODE = 'your_integration/general/mpn_attribute_code';
     public const XML_PATH_GTIN_ATTRIBUTE_CODE = 'your_integration/general/gtin_attribute_code';
     public const XML_PATH_CONTENT_LANGUAGE = 'your_integration/general/content_language';
-    public const XML_PATH_CLIENT_SCRIPT_PREFIX = 'your_integration/general/client_script';
 
     /**
      * @var ScopeConfigInterface
@@ -39,7 +38,6 @@ class Config
     {
         return $this->getApiKey()
             && $this->getIsEnabled()
-            && $this->getClientScript()
             && $this->hasIdentifierAttributesConfigured();
     }
 
@@ -130,18 +128,5 @@ class Config
         );
 
         return $language ?: 'en';
-    }
-
-    /**
-     * @return string
-     */
-    public function getClientScript(): string
-    {
-        $configPath = implode('/', [
-            self::XML_PATH_CLIENT_SCRIPT_PREFIX,
-            $this->getContentLanguage()
-        ]);
-
-        return (string)$this->scopeConfig->getValue($configPath);
     }
 }

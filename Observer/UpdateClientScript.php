@@ -6,23 +6,23 @@ namespace Your\Integration\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Your\Integration\Service\ClientScriptUpdate;
+use Your\Integration\Service\ClientScriptManager;
 use Your\Integration\Model\System\Config;
 
 class UpdateClientScript implements ObserverInterface
 {
     /**
-     * @var ClientScriptUpdate
+     * @var ClientScriptManager
      */
-    private ClientScriptUpdate $clientScriptUpdate;
+    private ClientScriptManager $clientScriptManager;
 
     /**
-     * @param ClientScriptUpdate $clientScriptUpdate
+     * @param ClientScriptManager $clientScriptManager
      */
     public function __construct(
-        ClientScriptUpdate $clientScriptUpdate,
+        ClientScriptManager $clientScriptManager,
     ) {
-        $this->clientScriptUpdate = $clientScriptUpdate;
+        $this->clientScriptManager = $clientScriptManager;
     }
 
     /**
@@ -41,7 +41,7 @@ class UpdateClientScript implements ObserverInterface
         );
 
         if ($configHasChanged) {
-            $this->clientScriptUpdate->execute(false);
+            $this->clientScriptManager->update(false);
         }
     }
 }
