@@ -57,6 +57,16 @@ class YourApi
      * What URL is requested in Magento admin -> What YOUR API URL must be called
      */
     private const API_REQUEST_URL_MAPPING = [
+        'Product/Title' => self::ENDPOINT_PATH_PRODUCT_DESCRIPTION,
+        'Product/Description' => self::ENDPOINT_PATH_ACTIVITY_SHOP_TOPIC,
+        'Product/Images' => self::ENDPOINT_PATH_PRODUCT_IMAGES,
+        'Product/Media' => self::ENDPOINT_PATH_PRODUCT_MEDIA,
+        'Product/ProsCons' => self::ENDPOINT_PATH_PRODUCT_PROS_CONS,
+        'Product/Bullets' => self::ENDPOINT_PATH_PRODUCT_BULLETS,
+        'Product/QnA/Questions' => self::ENDPOINT_PATH_PRODUCT_QA_QUESTIONS,
+        'Product/ReasonsToBuy' => self::ENDPOINT_PATH_PRODUCT_REASONS_TO_BUY,
+        'Product/Reviews' => self::ENDPOINT_PATH_PRODUCT_REVIEWS,
+        'Product/Specifications' => self::ENDPOINT_PATH_PRODUCT_SPECIFICATIONS,
         'Activity/Shop/Topic' => self::ENDPOINT_PATH_ACTIVITY_SHOP_TOPIC,
         'Catalog/Download' => self::ENDPOINT_PATH_CATALOG_DOWNLOAD,
         'ContentBlocks' => self::ENDPOINT_PATH_CONTENT_BLOCKS,
