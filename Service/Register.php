@@ -133,7 +133,7 @@ class Register
         }
 
         if (isset($result['success']) && $result['success'] === false) {
-            throw new \Exception($result['message'] ?? __('API Responded With An Unknown Error'));
+            throw new \Exception($result['message'] ?? __('API Responded With An Unknown Error')->getText());
         }
 
         if (!isset($result['apiKey'])) {
