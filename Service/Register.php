@@ -190,9 +190,6 @@ class Register
                 'currencyCode' => $store->getBaseCurrency()->getCode(),
                 'contentLanguage' => $this->config->getContentLanguage(),
                 'website' => $website,
-                'notifications' => [
-                    'email' => true
-                ],
             ],
             'user' => [
                 'website' => $website,
