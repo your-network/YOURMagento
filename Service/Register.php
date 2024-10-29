@@ -184,7 +184,7 @@ class Register
                 'address' => $storeInformation->getData('street_line1'),
                 'houseNumber' => $storeInformation->getData('street_line2'),
                 'zipCode' => $storeInformation->getPostcode(),
-                'country' => $storeInformation->getCountryId(),
+                'country' => $storeInformation->getCountryId() ?: 'NL',
                 'phoneNumber' => $storeInformation->getPhone(),
                 'vatNumber' => $storeInformation->getVatNumber(),
                 'currencyCode' => $store->getBaseCurrency()->getCode(),
