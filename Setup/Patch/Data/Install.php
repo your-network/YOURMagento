@@ -49,16 +49,15 @@ class Install implements DataPatchInterface, PatchRevertableInterface
      */
     public function revert(): void
     {
-        $connection = $this->moduleDataSetup->getConnection();
         $table = $this->moduleDataSetup->getTable('core_config_data');
+        $connection = $this->moduleDataSetup->getConnection();
 
-        $deletePath = Config::XML_PATH_CONTENT_LANGUAGE . '/%';
-        $connection->delete($table, ['path LIKE ?' => $deletePath]);
         $connection->delete($table, ['path IN (?)' => [
             Config::XML_PATH_ENABLED,
             Config::XML_PATH_API_KEY,
             Config::XML_PATH_MPN_ATTRIBUTE_CODE,
             Config::XML_PATH_GTIN_ATTRIBUTE_CODE,
+            Config::XML_PATH_CONTENT_LANGUAGE,
         ]]);
 
         $this->integrationManager->deleteIntegration();
