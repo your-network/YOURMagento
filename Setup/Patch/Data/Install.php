@@ -53,7 +53,7 @@ class Install implements DataPatchInterface, PatchRevertableInterface
         $table = $this->moduleDataSetup->getTable('core_config_data');
 
         $deletePath = Config::XML_PATH_CONTENT_LANGUAGE . '/%';
-        $connection->delete($table, ['path LIKE ?', $deletePath]);
+        $connection->delete($table, ['path LIKE ?' => $deletePath]);
         $connection->delete($table, ['path IN (?)' => [
             Config::XML_PATH_ENABLED,
             Config::XML_PATH_API_KEY,
