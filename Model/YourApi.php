@@ -242,7 +242,7 @@ class YourApi
 
         return $this->apiResponseFactory->create([
             'response' => $response->getBody(),
-            'statusCode' => $response->getStatusCode(),
+            'httpStatus' => $response->getStatusCode(),
             'headers' => $responseHeaders,
         ]);
     }
