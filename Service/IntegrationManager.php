@@ -64,6 +64,25 @@ class IntegrationManager
     }
 
     /**
+     * @return void
+     * @throws IntegrationException
+     */
+    public function deleteIntegration(): void
+    {
+        $integration = $this->integrationService->findByName(
+            self::INTEGRATION_NAME
+        );
+
+        if (!$integration) {
+            return;
+        }
+
+        $this->integrationService->delete($integration->getId());
+        $this->oauthService->deleteConsumer($integration->getConsumerId());
+
+    }
+
+    /**
      * @return Integration
      * @throws IntegrationException
      */
