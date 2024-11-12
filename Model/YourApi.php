@@ -54,37 +54,6 @@ class YourApi
     public const REGISTRATION_API_KEY       = 'afc29d1a-8f4b-4e99-a8b9-3e23f7f7602d';
 
     /**
-     * What URL is requested in Magento admin -> What YOUR API URL must be called
-     */
-    private const API_REQUEST_URL_MAPPING = [
-        'Product/Title' => self::ENDPOINT_PATH_PRODUCT_DESCRIPTION,
-        'Product/Description' => self::ENDPOINT_PATH_ACTIVITY_SHOP_TOPIC,
-        'Product/Images' => self::ENDPOINT_PATH_PRODUCT_IMAGES,
-        'Product/Media' => self::ENDPOINT_PATH_PRODUCT_MEDIA,
-        'Product/ProsCons' => self::ENDPOINT_PATH_PRODUCT_PROS_CONS,
-        'Product/Bullets' => self::ENDPOINT_PATH_PRODUCT_BULLETS,
-        'Product/QnA/Questions' => self::ENDPOINT_PATH_PRODUCT_QA_QUESTIONS,
-        'Product/ReasonsToBuy' => self::ENDPOINT_PATH_PRODUCT_REASONS_TO_BUY,
-        'Product/Reviews' => self::ENDPOINT_PATH_PRODUCT_REVIEWS,
-        'Product/Specifications' => self::ENDPOINT_PATH_PRODUCT_SPECIFICATIONS,
-        'Activity/Shop/Topic' => self::ENDPOINT_PATH_ACTIVITY_SHOP_TOPIC,
-        'Catalog/Download' => self::ENDPOINT_PATH_CATALOG_DOWNLOAD,
-        'ContentBlocks' => self::ENDPOINT_PATH_CONTENT_BLOCKS,
-        'Stats/Dashboard' => self::ENDPOINT_PATH_STATS_DASHBOARD,
-        'Stats/Requests/Graph' => self::ENDPOINT_PATH_STATS_REQUESTS_GRAPH,
-        'Stats/Requests/Products' => self::ENDPOINT_PATH_STATS_REQUESTS_PRODUCTS,
-        'Shop/Billing/Details' => self::ENDPOINT_PATH_SHOP_BILLING_DETAILS,
-        'Styling' => self::ENDPOINT_PATH_STYLING,
-        'Subscription' => self::ENDPOINT_PATH_SUBSCRIPTION,
-        'Subscription/Models' => self::ENDPOINT_PATH_SUBSCRIPTION_MODELS,
-        'Subscription/Downgrade' => self::ENDPOINT_PATH_SUBSCRIPTION_DOWNGRADE,
-        'Subscription/CostPrediction' => self::ENDPOINT_PATH_SUBSCRIPTION_COST_PREDICTION,
-        'Payment/Stripe/SetupIntent' => self::ENDPOINT_PATH_PAYMENT_STRIPE_SETUP_INTENT,
-        'Catalog/Product/Preview' => self::ENDPOINT_PATH_CATALOG_PRODUCT_PREVIEW,
-        'embed/snippet' => self::ENDPOINT_PATH_EMBED_SNIPPET,
-    ];
-
-    /**
      * @var UrlInterface
      */
     private UrlInterface $backendUrl;
@@ -187,19 +156,14 @@ class YourApi
      * @param array $params
      * @return string
      */
-    public function getMappedApiUrl(string $endpoint, array $params = []): string
+    public function getPreparedYourApiUrl(string $endpoint, array $params = []): string
     {
-        $mappedUrl = self::API_REQUEST_URL_MAPPING[$endpoint] ?? '';
-
-        if ($mappedUrl === self::ENDPOINT_PATH_EMBED_SNIPPET) {
-            $mappedUrl = str_replace('{locale}', $params['locale'] ?? 'en', $mappedUrl);
+        $endpoint = '/Magento/' . trim($endpoint, '/');
+        if ($endpoint === self::ENDPOINT_PATH_EMBED_SNIPPET) {
+            $endpoint = str_replace('{locale}', $params['locale'] ?? 'en', $endpoint);
         }
 
-        if ($mappedUrl) {
-            return $this->getYourApiUrl($mappedUrl);
-        }
-
-        return '';
+        return $this->getYourApiUrl($endpoint);
     }
 
     /**
