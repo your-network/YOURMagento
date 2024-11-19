@@ -75,13 +75,6 @@ class Request extends Action implements
      */
     public function execute(): ResultInterface
     {
-        $apiRequestUrl = $this->getApiRequestUrl();
-        if (!$apiRequestUrl) {
-            return $this->resultFactory->create(ResultFactory::TYPE_RAW)
-                ->setContents(__('API Request Is Not Mapped'))
-                ->setHttpResponseCode(404);
-        }
-
         /** @var Http $request */
         $request = $this->_request;
         if ($request->getMethod() === $request::METHOD_POST
@@ -94,6 +87,7 @@ class Request extends Action implements
             $params = $request->getQuery()->toArray();
         }
 
+        $apiRequestUrl = $this->getApiRequestUrl();
         $response = $this->yourApi->makeRequest(
             $apiRequestUrl,
             $params,
@@ -123,6 +117,6 @@ class Request extends Action implements
         $apiProxyUrl = $this->yourApi->getMagentoAdminApiUrl();
         $apiRequestUrl = str_replace($apiProxyUrl, '', $requestPath);
 
-        return $this->yourApi->getMappedApiUrl($apiRequestUrl, $requestParams);
+        return $this->yourApi->getPreparedYourApiUrl($apiRequestUrl, $requestParams);
     }
 }

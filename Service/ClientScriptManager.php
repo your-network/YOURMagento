@@ -63,10 +63,10 @@ class ClientScriptManager
     }
 
     /**
-     * @param bool $cleanConfigCache
+     * @param bool $cleanCache
      * @return bool
      */
-    public function update(bool $cleanConfigCache = true): bool
+    public function update(bool $cleanCache = true): bool
     {
         if (!$this->config->getApiKey()) {
             return false;
@@ -79,8 +79,8 @@ class ClientScriptManager
             }
         }
 
-        if ($localesUsed && $cleanConfigCache) {
-            $this->cacheTypeList->cleanType(ConfigCache::TYPE_IDENTIFIER);
+        if ($localesUsed && $cleanCache) {
+            $this->cache->clean(self::CACHE_KEY_CLIENT_SCRIPT_PREFIX);
         }
 
         foreach (array_unique($localesUsed) as $locale) {
@@ -98,7 +98,15 @@ class ClientScriptManager
             }
 
             $cacheKey = $this->getCacheKey($locale);
-            $this->cache->save($clientScript, $cacheKey, [ConfigCache::TYPE_IDENTIFIER], self::CACHE_LIFETIME);
+            $this->cache->save(
+                $clientScript,
+                $cacheKey,
+                [
+                    self::CACHE_KEY_CLIENT_SCRIPT_PREFIX,
+                    ConfigCache::TYPE_IDENTIFIER,
+                ],
+                self::CACHE_LIFETIME
+            );
         }
 
         return true;
@@ -127,7 +135,15 @@ class ClientScriptManager
                 return '';
             }
 
-            $this->cache->save($clientScript, $cacheKey, [ConfigCache::TYPE_IDENTIFIER], self::CACHE_LIFETIME);
+            $this->cache->save(
+                $clientScript,
+                $cacheKey,
+                [
+                    self::CACHE_KEY_CLIENT_SCRIPT_PREFIX,
+                    ConfigCache::TYPE_IDENTIFIER,
+                ],
+                self::CACHE_LIFETIME
+            );
         }
 
         return $clientScript;
