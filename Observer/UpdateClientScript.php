@@ -41,7 +41,7 @@ class UpdateClientScript implements ObserverInterface
         );
 
         if ($configHasChanged) {
-            $this->clientScriptManager->update(false);
+            $this->clientScriptManager->update();
         }
     }
 }
