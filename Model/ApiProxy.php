@@ -236,11 +236,11 @@ class ApiProxy implements ApiProxyInterface
     public function clientScriptWebhook(): bool
     {
         $credentials = $this->integrationManager->getIntegrationCredentials();
-        $accessToken = (string)$this->request->getHeader('Authorization');
-        $accessToken = trim(str_replace('Bearer', '', $accessToken));
-        $hasCredentials = $accessToken && $credentials;
+        $accessTokenSecret = (string)$this->request->getHeader('Authorization');
+        $accessTokenSecret = trim(str_replace('Bearer', '', $accessTokenSecret));
+        $hasCredentials = $accessTokenSecret && $credentials;
 
-        if ($hasCredentials && $accessToken === $credentials['access_token']) {
+        if ($hasCredentials && $accessTokenSecret === $credentials['access_token_secret']) {
             return $this->clientScriptManager->update();
         }
 
