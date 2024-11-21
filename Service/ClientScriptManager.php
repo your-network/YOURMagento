@@ -6,6 +6,8 @@ namespace Your\Integration\Service;
 
 use Magento\Framework\App\Cache\TypeListInterface;
 use Magento\Framework\App\Cache\Type\Config as ConfigCache;
+use Magento\Framework\App\Cache\Type\Block as BlockCache;
+use Magento\PageCache\Model\Cache\Type as FullPageCache;
 use Magento\Store\Api\StoreRepositoryInterface;
 use Magento\Framework\App\CacheInterface;
 use Your\Integration\Model\System\Config;
@@ -81,6 +83,8 @@ class ClientScriptManager
 
         if ($localesUsed && $cleanCache) {
             $this->cache->clean(self::CACHE_KEY_CLIENT_SCRIPT_PREFIX);
+            $this->cacheTypeList->cleanType(BlockCache::TYPE_IDENTIFIER);
+            $this->cacheTypeList->cleanType(FullPageCache::TYPE_IDENTIFIER);
         }
 
         foreach (array_unique($localesUsed) as $locale) {

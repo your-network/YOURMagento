@@ -4,12 +4,19 @@ declare(strict_types=1);
 
 namespace Your\Integration\Model;
 
+use Magento\Framework\Webapi\Rest\Request;
 use Magento\Framework\Webapi\Rest\Response;
 use Your\Integration\Api\ApiProxyInterface;
 use Your\Integration\Service\ClientScriptManager;
+use Your\Integration\Service\IntegrationManager;
 
 class ApiProxy implements ApiProxyInterface
 {
+    /**
+     * @var Request
+     */
+    private Request $request;
+
     /**
      * @var Response
      */
@@ -26,18 +33,29 @@ class ApiProxy implements ApiProxyInterface
     private ClientScriptManager $clientScriptManager;
 
     /**
+     * @var IntegrationManager
+     */
+    private IntegrationManager $integrationManager;
+
+    /**
+     * @param Request $request
      * @param Response $response
      * @param YourApi $yourApi
      * @param ClientScriptManager $clientScriptManager
+     * @param IntegrationManager $integrationManager
      */
     public function __construct(
+        Request $request,
         Response $response,
         YourApi $yourApi,
-        ClientScriptManager $clientScriptManager
+        ClientScriptManager $clientScriptManager,
+        IntegrationManager $integrationManager
     ) {
+        $this->request = $request;
         $this->response = $response;
         $this->yourApi = $yourApi;
         $this->clientScriptManager = $clientScriptManager;
+        $this->integrationManager = $integrationManager;
     }
 
     /**
@@ -217,7 +235,17 @@ class ApiProxy implements ApiProxyInterface
      */
     public function clientScriptWebhook(): bool
     {
-        return $this->clientScriptManager->update();
+        $credentials = $this->integrationManager->getIntegrationCredentials();
+        $accessToken = (string)$this->request->getHeader('Authorization');
+        $accessToken = trim(str_replace('Bearer', '', $accessToken));
+        $hasCredentials = $accessToken && $credentials;
+
+        if ($hasCredentials && $accessToken === $credentials['access_token']) {
+            return $this->clientScriptManager->update();
+        }
+
+        $this->response->setHttpResponseCode(403);
+        return false;
     }
 
     /**
