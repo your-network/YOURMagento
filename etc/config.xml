@@ -5,7 +5,7 @@
             <general>
                 <enabled>1</enabled>
                 <content_language>en</content_language>
-                <api_base_url>https://integrations-acceptance.your.io</api_base_url>
+                <api_base_url>https://quickly-smart-macaque.ngrok-free.app</api_base_url>
             </general>
         </your_integration>
     </default>
